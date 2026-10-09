@@ -57,61 +57,6 @@
   }
 }
 
-/* Motion polish: visual-only enhancements; calendar state and event logic stay unchanged. */
-@keyframes calendarCellReveal {
-  from { opacity: 0; transform: translateY(5px) scale(.985); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-@keyframes eventRowReveal {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes navSelectionReveal {
-  from { opacity: .72; }
-  to { opacity: 1; }
-}
-.date-cell {
-  animation: calendarCellReveal .24s cubic-bezier(.2,.75,.25,1) both;
-}
-.date-grid .date-cell:nth-child(-n+14) { animation-delay: .015s; }
-.date-grid .date-cell:nth-child(n+15):nth-child(-n+28) { animation-delay: .03s; }
-.date-grid .date-cell:nth-child(n+29):nth-child(-n+42) { animation-delay: .045s; }
-.event-list > .event,
-.search-event-list > .event {
-  animation: eventRowReveal .22s ease both;
-}
-.event-list > .event:nth-child(2),
-.search-event-list > .event:nth-child(2) { animation-delay: .025s; }
-.event-list > .event:nth-child(3),
-.search-event-list > .event:nth-child(3) { animation-delay: .05s; }
-.event-list > .event:nth-child(4),
-.search-event-list > .event:nth-child(4) { animation-delay: .075s; }
-.event-list > .event:nth-child(5),
-.search-event-list > .event:nth-child(5) { animation-delay: .1s; }
-.nav-btn.active { animation: navSelectionReveal .2s ease both; }
-.icon-btn:active,
-.nav-btn:active,
-.month-controls button:active,
-.date-suggestion:active,
-.panel-text-btn:active,
-.secondary:active {
-  transform: scale(.97);
-}
-.event .check {
-  transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
-}
-.event .check:checked {
-  transform: scale(1.06);
-}
-@media (prefers-reduced-motion: reduce) {
-  .date-cell,
-  .event-list > .event,
-  .search-event-list > .event,
-  .nav-btn.active {
-    animation: none !important;
-  }
-}
-
 </style>
 </head>
 <body><div class="app">
