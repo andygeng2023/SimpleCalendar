@@ -12,7 +12,14 @@
 
 <body>
 
-    <h1>Sample h1 heading</h1>
+    <h3 id="current-date"></h3>
+
+    <script>
+        const today = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').innerText = today.toLocaleDateString(undefined, options);
+    </script>
+    
     <h2>Sample h2 heading</h2>
 
     <p>Sample paragraph</p>
