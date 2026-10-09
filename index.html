@@ -100,6 +100,10 @@
 @keyframes calendarWholeNext{from{opacity:.35;transform:translateX(38px)}to{opacity:1;transform:translateX(0)}}
 @keyframes calendarWholePrev{from{opacity:.35;transform:translateX(-38px)}to{opacity:1;transform:translateX(0)}}
 @media(prefers-reduced-motion:reduce){#calendarScreen.view-change-up .calendar-toolbar,#calendarScreen.view-change-up .calendar-scroller,#calendarScreen.view-change-down .calendar-toolbar,#calendarScreen.view-change-down .calendar-scroller,#calendarScreen.slide-next .calendar-toolbar,#calendarScreen.slide-next .calendar-scroller,#calendarScreen.slide-prev .calendar-toolbar,#calendarScreen.slide-prev .calendar-scroller{animation:none!important}}
+
+/* Drag state must override the collapsed-state content hiding rules */
+#calendarScreen:not(.panel-open) .selected-panel.is-dragging .panel-head{display:flex!important}
+#calendarScreen:not(.panel-open) .selected-panel.is-dragging #panelEvents{display:block!important}
 </style>
 </head>
 <body><div class="app">
