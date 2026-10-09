@@ -81,6 +81,11 @@
 #eventForm .field input,#eventForm .field select,#eventForm .field textarea{width:100%;min-width:0;max-width:100%;display:block}
 #eventForm .field textarea{box-sizing:border-box}
 @media(min-width:600px){#eventForm .form-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:18px;row-gap:0}#eventForm .field.full{grid-column:1/-1}}
+
+/* Keep ordinary view changes layout-stable; animate size only after handle drags. */
+#calendarScreen:not(.is-view-settling) .calendar-scroller{transition:none!important}
+#calendarScreen.is-view-settling .calendar-scroller{transition:flex-basis .3s cubic-bezier(.2,.75,.25,1),height .3s cubic-bezier(.2,.75,.25,1),max-height .3s cubic-bezier(.2,.75,.25,1)}
+#calendarScreen.is-view-settling .selected-panel{transition:flex-basis .3s cubic-bezier(.2,.75,.25,1),transform .3s cubic-bezier(.2,.75,.25,1)}
 </style>
 </head>
 <body><div class="app">
