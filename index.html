@@ -135,6 +135,14 @@
 #calendarScreen .selected-panel .handle-grip,
 #calendarScreen .selected-panel .handle-grip:active,
 #calendarScreen .selected-panel .handle-grip.dragging{background:#aab7aa!important;transform:none!important;width:58px!important;transition:none!important}
+
+/* Drag panel: explicitly disable all motion and keep the handle colour unchanged. */
+#calendarScreen .selected-panel,
+#calendarScreen.panel-dragging .selected-panel,
+#calendarScreen.panel-settling .selected-panel{transition:none!important;animation:none!important;background:#f8faf7!important}
+#calendarScreen .selected-panel .handle-grip,
+#calendarScreen .selected-panel .handle-grip:active,
+#calendarScreen .selected-panel .handle-grip.dragging{transition:none!important;animation:none!important;background:#aab7aa!important;transform:none!important;width:58px!important}
 </style>
 </head>
 <body><div class="app">
@@ -298,18 +306,13 @@ function endHandleDrag(){
  if(!handleDragging)return;
  handleDragging=false;
  handle.classList.remove('dragging');
- /* Keep the expanded content visible until the eased settle finishes. */
  selectedPanel.classList.remove('is-snapping');
  const releasedHeight=selectedPanel.getBoundingClientRect().height;
  const target=viewStops().reduce((best,item)=>Math.abs(item.height-releasedHeight)<Math.abs(best.height-releasedHeight)?item:best);
- $('calendarScreen').classList.add('panel-settling');
- selectedPanel.style.transition='height 260ms cubic-bezier(.22,.8,.24,1), flex-basis 260ms cubic-bezier(.22,.8,.24,1)';
+ /* Deliberately settle immediately: no release animation or transition. */
+ $('calendarScreen').classList.remove('panel-settling');
  applyDragHeight(target.height);
- let finished=false;
- const finish=()=>{if(finished)return;finished=true;selectedPanel.removeEventListener('transitionend',onEnd);finishHandleSettle(target)};
- const onEnd=e=>{if(e.target===selectedPanel&&(e.propertyName==='height'||e.propertyName==='flex-basis'))finish()};
- selectedPanel.addEventListener('transitionend',onEnd);
- setTimeout(finish,310);
+ finishHandleSettle(target);
 }
 handle.addEventListener('pointerdown',e=>{
  if(e.button!==undefined&&e.button!==0)return;
