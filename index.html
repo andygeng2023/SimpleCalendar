@@ -12,24 +12,58 @@
 
 <body>
 
+    <main>
+    
+    <section id="home" class="tab-content">
+
+    <h1 id="current-dow"></h1>
     <h3 id="current-date"></h3>
 
     <script>
-        const today = new Date();
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('current-date').innerText = today.toLocaleDateString(undefined, options);
+        let dow = new Date()
+        document.getElementById('current-dow').innerText = date.getDay(undefined, day: 'numeric')
+        let date = new Date();
+        let options = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').innerText = date.toLocaleDateString(undefined, options);
     </script>
     
     <h2>Sample h2 heading</h2>
 
     <p>Sample paragraph</p>
+    
+    </section>
+
+    <section id="calendar" class="tab-content" hidden>
+      <h2>Tasks</h2>
+      <p>Your tasks go here.</p>
+    </section>
+
+    <section id="addev" class="tab-content" hidden>
+      <h2>Progress</h2>
+      <p>Your progress goes here.</p>
+    </section>
+
+    <section id="settings" class="tab-content" hidden>
+      <h2>Settings</h2>
+      <p>Your settings go here.</p>
+    </section>
+    
+    </main>
 
     <nav>
-        <div class="navbar">
-            <img href="/assets/images/navbar-home.svg" class="active" alt="Home"
-            <img href="/assets/images/navbar-calendar.svg" alt="Calendar">
-            <img href="/assets/images/navbar-addev.svg" alt="Add Event">
-            <img href="/assets/images/navbar-settings.svg" alt="Settings">
+        <nav class="navbar">
+            <button class="tab" data-tab="home">
+                <img href="/assets/images/navbar-home.svg" class="active" alt="Home">
+            </button>
+            <button class="tab" data-tab="calendar">
+                <img href="/assets/images/navbar-calendar.svg" alt="Calendar">
+            </button>button>
+            <button class="tab" data-tab="addev">
+                <img href="/assets/images/navbar-addev.svg" alt="Add Event">
+            </button>
+            <button class="tab" data-tab="settings">
+                <img href="/assets/images/navbar-settings.svg" alt="Settings">
+            </button>
         </div>
     </nav>
 </body>
