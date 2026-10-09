@@ -115,6 +115,19 @@
 #calendarScreen.panel-dragging .selected-panel .handle-grip,
 #calendarScreen.panel-dragging .selected-panel .handle-grip:active,
 #calendarScreen.panel-dragging .selected-panel .handle-grip.dragging{background:#aab7aa!important;transform:none!important;width:58px!important;transition:none!important}
+
+/* Keep the panel surface and grip colour consistent throughout the drag.
+   Release uses a short eased transition to the nearest resting position. */
+#calendarScreen.panel-dragging .selected-panel,
+#calendarScreen.panel-settling .selected-panel{background:#f8faf7!important}
+#calendarScreen.panel-dragging .selected-panel{box-shadow:0 -6px 24px #213a240c!important}
+#calendarScreen.panel-settling .selected-panel{transition:height 260ms cubic-bezier(.22,.8,.24,1),flex-basis 260ms cubic-bezier(.22,.8,.24,1)!important}
+#calendarScreen.panel-dragging .selected-panel .handle-grip,
+#calendarScreen.panel-dragging .selected-panel .handle-grip:active,
+#calendarScreen.panel-dragging .selected-panel .handle-grip.dragging,
+#calendarScreen.panel-settling .selected-panel .handle-grip,
+#calendarScreen.panel-settling .selected-panel .handle-grip:active,
+#calendarScreen.panel-settling .selected-panel .handle-grip.dragging{background:#aab7aa!important;transform:none!important;width:58px!important;transition:none!important}
 </style>
 </head>
 <body><div class="app">
@@ -239,36 +252,50 @@ if(matches.length){const h=document.createElement('div');h.className='search-sec
 let handleY=0,handleX=0,handleStartView='all',handleStartHeight=42,handleDragging=false;
 const handle=$('selectedPanel').querySelector('.handle-grip'),selectedPanel=$('selectedPanel');
 function clearHandleInline(){['height','flex','flex-basis','flex-grow','flex-shrink','min-height','max-height','overflow','transition'].forEach(p=>selectedPanel.style.removeProperty(p))}
-function handleDragHeight(dy){return Math.max(42,Math.min(window.innerHeight-150,handleStartHeight-dy))}
+function dragMaxHeight(){return Math.max(42,$('calendarScreen').clientHeight-150)}
+function handleDragHeight(dy){return Math.max(42,Math.min(dragMaxHeight(),handleStartHeight-dy))}
 function applyDragHeight(height){
- const maxHeight=Math.max(42,$('calendarScreen').clientHeight-150);
- const h=Math.max(42,Math.min(maxHeight,height));
- /* Use the existing flex column: keep the panel's bottom in normal flow and resize its basis. */
+ const h=Math.max(42,Math.min(dragMaxHeight(),height));
+ /* Resize the panel in the normal flex column; the calendar row yields the space. */
  selectedPanel.style.height=h+'px';
  selectedPanel.style.flex='0 0 '+h+'px';
  selectedPanel.style.flexBasis=h+'px';
  selectedPanel.style.flexGrow='0';
  selectedPanel.style.flexShrink='0';
 }
-function nearestViewForHeight(height){
- const max=window.innerHeight-150;
- const snaps=[
+function viewStops(){
+ const max=dragMaxHeight(),area=$('calendarScreen').clientHeight;
+ return [
   {view:'all',height:42},
-  {view:'month',height:Math.max(42,Math.min(window.innerHeight*.31,max))},
-  {view:'week',height:Math.max(42,Math.min(window.innerHeight*.39,max))}
+  {view:'month',height:Math.max(42,Math.min(max,area*.31))},
+  {view:'week',height:Math.max(42,Math.min(max,area*.39))}
  ];
- return snaps.reduce((best,item)=>Math.abs(item.height-height)<Math.abs(best.height-height)?item:best).view;
+}
+function nearestViewForHeight(height){
+ return viewStops().reduce((best,item)=>Math.abs(item.height-height)<Math.abs(best.height-height)?item:best).view;
+}
+function finishHandleSettle(targetView){
+ $('calendarScreen').classList.remove('panel-dragging','panel-settling');
+ selectedPanel.classList.remove('is-dragging','is-snapping');
+ clearHandleInline();
+ view=targetView;
+ renderCalendar();
 }
 function endHandleDrag(){
  if(!handleDragging)return;
  handleDragging=false;
- $('calendarScreen').classList.remove('panel-dragging');
  handle.classList.remove('dragging');
  selectedPanel.classList.remove('is-dragging','is-snapping');
  const releasedHeight=selectedPanel.getBoundingClientRect().height;
- view=nearestViewForHeight(releasedHeight);
- clearHandleInline();
- renderCalendar();
+ const target=viewStops().reduce((best,item)=>Math.abs(item.height-releasedHeight)<Math.abs(best.height-releasedHeight)?item:best);
+ $('calendarScreen').classList.add('panel-settling');
+ selectedPanel.style.transition='height 260ms cubic-bezier(.22,.8,.24,1), flex-basis 260ms cubic-bezier(.22,.8,.24,1)';
+ applyDragHeight(target.height);
+ let finished=false;
+ const finish=()=>{if(finished)return;finished=true;selectedPanel.removeEventListener('transitionend',onEnd);finishHandleSettle(target.view)};
+ const onEnd=e=>{if(e.target===selectedPanel&&(e.propertyName==='height'||e.propertyName==='flex-basis'))finish()};
+ selectedPanel.addEventListener('transitionend',onEnd);
+ setTimeout(finish,310);
 }
 handle.addEventListener('pointerdown',e=>{
  if(e.button!==undefined&&e.button!==0)return;
@@ -298,7 +325,7 @@ handle.addEventListener('pointercancel',()=>{
  if(!handleDragging)return;
  view=handleStartView;
  handleDragging=false;
- $('calendarScreen').classList.remove('panel-dragging');
+ $('calendarScreen').classList.remove('panel-dragging','panel-settling');
  handle.classList.remove('dragging');
  selectedPanel.classList.remove('is-dragging','is-snapping');
  clearHandleInline();
