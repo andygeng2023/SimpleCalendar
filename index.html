@@ -44,6 +44,10 @@
 #calendarScreen .search-wrap:has(+ #searchResults:not(:empty)){margin-bottom:3px}
 @media(max-width:430px){.panel-text-btn{font-size:12px;padding:0 9px;min-height:36px}.panel-head h2{font-size:17px}.search-results{max-height:32%}.search-event-list .event{padding:6px 7px}}
 @media(prefers-reduced-motion:reduce){.screen.active,.calendar-scroller.view-enter,.timeline-month{animation:none!important;transition:none!important}}
+
+/* Quick event AI feedback */
+#quickPreview{white-space:normal;overflow-wrap:anywhere;margin:10px 0 12px;padding:10px 12px;border:1px solid #dce7dc;border-radius:12px;background:#f5faf5;color:#2b4830;line-height:1.5}
+#quickSave[disabled]{opacity:.65;cursor:wait}
 </style>
 </head>
 <body><div class="app">
@@ -98,8 +102,63 @@ function norm(t,other){let z=t.toLowerCase().replace(/\s/g,'');let ap=z.match(/(
 if(tm){start=norm(tm[1],tm[2]);end=norm(tm[2],tm[1]);title=title.replace(tm[0],' ')}else if((m=s.match(/\b(?:at\s*)?(\d{1,2})(?::([0-5]\d))?\s*(am|pm)\b/i))){let h=Number(m[1]),min=Number(m[2]||0);if(m[3].toLowerCase()==='pm'&&h<12)h+=12;if(m[3].toLowerCase()==='am'&&h===12)h=0;start=pad(h)+':'+pad(min);title=title.replace(m[0],' ')}else if(/\bnoon\b/i.test(s)){start='12:00';title=title.replace(/\bnoon\b/i,' ')}else if(/\bmidnight\b/i.test(s)){start='00:00';title=title.replace(/\bmidnight\b/i,' ')}
 if(/\bevery\s+day\b|\bdaily\b/i.test(s)){repeat='daily';title=title.replace(/\b(every\s+day|daily)\b/i,' ')}else if(/\bevery\s+week|\bweekly\b|\bevery\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i.test(s)){repeat='weekly';title=title.replace(/\b(every\s+week|weekly|every\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday))\b/i,' ')}else if(/\bevery\s+month|\bmonthly\b/i.test(s)){repeat='monthly';title=title.replace(/\b(every\s+month|monthly)\b/i,' ')}else if(/\bevery\s+year|\byearly\b|\bannually\b/i.test(s)){repeat='yearly';title=title.replace(/\b(every\s+year|yearly|annually)\b/i,' ')}
 title=title.replace(/\b(on|at)\b/gi,' ').replace(/[,.]+/g,' ').replace(/\s+/g,' ').trim();if(!title)title=raw.trim();return {title,date:dateKey(date),start,end,repeat,tag:repeat!=='none'?'Repeating':start?'Timed':'All day'}}
-$('quickText').addEventListener('input',()=>{const raw=$('quickText').value;if(!raw.trim()){$('quickPreview').textContent='';return}const p=parseNatural(raw);$('quickPreview').textContent='Preview: '+p.title+' · '+fmtDate(parseDate(p.date),{weekday:'short',day:'numeric',month:'short',year:'numeric'})+' · '+(p.start?(p.start+(p.end?'–'+p.end:'')):'All day')+(p.repeat!=='none'?' · '+repeatText(p.repeat):'')});
-$('quickSave').addEventListener('click',()=>{const raw=$('quickText').value.trim();if(!raw){showToast('Describe your event first.');return}const p=parseNatural(raw);events.push({id:crypto.randomUUID(),...p,done:false,description:'',location:'',people:'',notes:''});persist();selected=parseDate(p.date);cursor=new Date(selected);closeModal();renderAll();switchScreen('calendar');showToast('Event added')});
+const VIREONIX_ENDPOINT='https://amquosuyqcyyinjhvuow.supabase.co/functions/v1/vireonix-chat';
+let quickParseTimer=null,quickParseRequest=0,quickAiResult=null;
+function localDateString(d=new Date()){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function normalizeAiEvent(data,raw){
+ if(!data||typeof data!=='object')throw new Error('Invalid event structure');
+ const local=parseNatural(raw);
+ const clean=(v,max=500)=>typeof v==='string'?v.trim().slice(0,max):'';
+ let date=clean(data.date,20);
+ if(date&&!/^\d{4}-\d{2}-\d{2}$/.test(date))date='';
+ if(date){const parsed=parseDate(date);if(!parsed||Number.isNaN(parsed.getTime())||dateKey(parsed)!==date)date=''}
+ const time=v=>{v=clean(v,20);if(!v)return '';if(/^\d{1,2}:\d{2}$/.test(v)){const [h,m]=v.split(':').map(Number);return h<24&&m<60?pad(h)+':'+pad(m):''}const m=v.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)$/i);if(!m)return '';let h=Number(m[1]),min=Number(m[2]||0);if(h<1||h>12||min>59)return '';if(m[3].toLowerCase()==='pm'&&h<12)h+=12;if(m[3].toLowerCase()==='am'&&h===12)h=0;return pad(h)+':'+pad(min)};
+ let repeat=clean(data.repeat,30).toLowerCase();
+ if(!['none','daily','weekly','monthly','yearly'].includes(repeat)){if(/daily|every day/i.test(repeat))repeat='daily';else if(/weekly|every week|every (monday|tuesday|wednesday|thursday|friday|saturday|sunday)/i.test(repeat))repeat='weekly';else if(/monthly|every month/i.test(repeat))repeat='monthly';else if(/yearly|annually|every year/i.test(repeat))repeat='yearly';else repeat=local.repeat}
+ const title=clean(data.title,180)||local.title;
+ return {title,description:clean(data.description,2000),date:date||local.date||dateKey(selected),start:time(data.start)||local.start,end:time(data.end)||local.end,repeat,location:clean(data.location,300),people:clean(Array.isArray(data.people)?data.people.join(', '):data.people,500),notes:clean(data.notes,2000),tag:repeat!=='none'?'Repeating':(time(data.start)||local.start)?'Timed':'All day'};
+}
+async function parseWithVireonix(raw){
+ const today=localDateString(),selectedDay=dateKey(selected);
+ const prompt='Extract a calendar event from the user text. Return ONLY one valid JSON object, no markdown or commentary, with exactly these fields: title (short event name), description (extra details, not the title), date (YYYY-MM-DD), start (24-hour HH:MM or empty string), end (24-hour HH:MM or empty string), repeat (one of none,daily,weekly,monthly,yearly), location (string or empty), people (string or empty), notes (other useful details or empty). Today is '+today+'. The currently selected calendar date is '+selectedDay+'. Resolve relative dates like today, tomorrow and next Friday using today. If no date is stated, use the selected calendar date. If no time is stated, leave start and end empty. Do not invent details. Interpret time ranges and AM/PM correctly. Extract recurrence into repeat. Keep details not fitting other fields in notes. User text: '+JSON.stringify(raw);
+ const response=await fetch(VIREONIX_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','Accept':'text/event-stream, application/json'},body:JSON.stringify({messages:[{role:'user',content:prompt}]})});
+ if(!response.ok)throw new Error('VireonixAI request failed (HTTP '+response.status+')');
+ const type=response.headers.get('content-type')||'';let answer='';
+ if(!response.body||!type.includes('text/event-stream')){const body=await response.json();answer=body?.choices?.[0]?.message?.content||body?.output_text||''}
+ else{
+  const reader=response.body.getReader(),decoder=new TextDecoder();let buffer='';
+  while(true){const {value,done}=await reader.read();if(done)break;buffer+=decoder.decode(value,{stream:true});const parts=buffer.split(/\n\n/);buffer=parts.pop()||'';for(const part of parts){for(const line of part.split(/\n/)){if(!line.startsWith('data:'))continue;const payload=line.slice(5).trim();if(!payload||payload==='[DONE]')continue;try{const chunk=JSON.parse(payload);answer+=chunk?.choices?.[0]?.delta?.content||chunk?.choices?.[0]?.message?.content||''}catch{}}}}
+ }
+ if(!answer.trim())throw new Error('VireonixAI returned no event data');
+ const cleaned=answer.trim().replace(/^\x60{3}(?:json)?\s*/i,'').replace(/\s*\x60{3}$/,'');
+ const parsed=JSON.parse(cleaned);
+ return normalizeAiEvent(parsed,raw);
+}
+function showQuickPreview(p,prefix='Preview'){
+ $('quickPreview').textContent=prefix+': '+p.title+' · '+fmtDate(parseDate(p.date),{weekday:'short',day:'numeric',month:'short',year:'numeric'})+' · '+(p.start?(p.start+(p.end?'–'+p.end:'')):'All day')+(p.repeat!=='none'?' · '+repeatText(p.repeat):'')+(p.description?' · '+p.description:'')+(p.location?' · '+p.location:'');
+}
+$('quickText').addEventListener('input',()=>{
+ const raw=$('quickText').value.trim();quickAiResult=null;clearTimeout(quickParseTimer);const request=++quickParseRequest;
+ if(!raw){$('quickPreview').textContent='';return}
+ showQuickPreview(parseNatural(raw),'Local preview');
+ quickParseTimer=setTimeout(async()=>{
+  if(raw!==$('quickText').value.trim())return;
+  $('quickPreview').textContent='Interpreting event details with VireonixAI…';
+  try{const p=await parseWithVireonix(raw);if(request!==quickParseRequest||raw!==$('quickText').value.trim())return;quickAiResult={raw,event:p};showQuickPreview(p,'VireonixAI')}
+  catch(error){if(request!==quickParseRequest)return;$('quickPreview').textContent='AI parsing unavailable; local preview shown. '+$('quickPreview').textContent.replace(/^Local preview: /,'')}
+ },650);
+});
+$('quickSave').addEventListener('click',async()=>{
+ const raw=$('quickText').value.trim();if(!raw){showToast('Describe your event first.');return}
+ const btn=$('quickSave');btn.disabled=true;btn.setAttribute('aria-busy','true');
+ try{
+  let p;if(quickAiResult?.raw===raw)p=quickAiResult.event;else{ $('quickPreview').textContent='Interpreting event details…';try{p=await parseWithVireonix(raw)}catch(error){p=parseNatural(raw);showToast('AI unavailable; used local parsing')}} 
+  if(!p.title||!p.date){showToast('Add an event name and date.');return}
+  events.push({id:crypto.randomUUID(),...p,done:false,description:p.description||'',location:p.location||'',people:p.people||'',notes:p.notes||''});
+  persist();selected=parseDate(p.date);cursor=new Date(selected);closeModal();renderAll();switchScreen('calendar');showToast('Event added');
+ }finally{btn.disabled=false;btn.removeAttribute('aria-busy')}
+});
+
 $('eventForm').addEventListener('submit',e=>{e.preventDefault();const id=$('eventForm').dataset.editId;const old=events.find(x=>x.id===id);const item={id:id||crypto.randomUUID(),title:$('eventTitle').value.trim(),description:$('eventDescription').value.trim(),date:$('eventDate').value,start:$('eventStart').value,end:$('eventEnd').value,repeat:$('eventRepeat').value,location:$('eventLocation').value.trim(),people:$('eventPeople').value.trim(),notes:$('eventNotes').value.trim(),done:old?.done||false,tag:$('eventRepeat').value!=='none'?'Repeating':$('eventStart').value?'Timed':''};if(!item.title||!item.date)return;if(id)events=events.map(x=>x.id===id?item:x);else events.push(item);selected=parseDate(item.date);cursor=new Date(selected);persist();closeModal();renderAll();showToast(id?'Event updated':'Event added');$('eventForm').dataset.editId=''});
 ['prevYear','nextYear','prevMonth','nextMonth'].forEach(id=>$(id).addEventListener('click',()=>{const amount=id==='prevYear'?-12:id==='nextYear'?12:id==='prevMonth'?-1:1;cursor=new Date(cursor.getFullYear(),cursor.getMonth()+amount,1,12);selected=new Date(cursor.getFullYear(),cursor.getMonth(),Math.min(selected.getDate(),new Date(cursor.getFullYear(),cursor.getMonth()+1,0).getDate()),12);renderCalendar()}));
 
