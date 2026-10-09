@@ -218,18 +218,25 @@ function updateDragPreview(dy){
  calendarScreen.style.setProperty('--drag-progress',String(progress));
  calendarScreen.style.setProperty('--drag-panel-size',Math.max(0,Math.min(-dy,Math.min(window.innerHeight*.55,420)))+'px');
  calendarScreen.style.setProperty('--drag-close-size',Math.max(0,Math.min(Math.abs(dy),Math.min(window.innerHeight*.55,420)))+'px');
- if(handleStartView!=='all'){
+ const target=canPreview&&progress>=.42?nextDragView(handleStartView,dy):handleStartView;
+ if(handleStartView!=='all'||(target!=='all'&&handleStartView==='all')){
   const maxHeight=Math.max(150,calendarScreen.clientHeight-(calendarScreen.querySelector('.search-wrap')?.offsetHeight||0)-80);
-  const targetHeight=Math.max(78,Math.min(maxHeight,handleStartScrollerHeight+Math.abs(dy)));
+  let base=handleStartScrollerHeight;
+  if(handleStartView==='all')base=Math.min(maxHeight,Math.max(150,window.innerHeight*.42));
+  const targetHeight=handleStartView==='all'
+   ?Math.max(78,Math.min(maxHeight,base-Math.abs(dy)))
+   :Math.max(78,Math.min(maxHeight,base+Math.abs(dy)));
   calendarScreen.style.setProperty('--drag-scroller-height',targetHeight+'px');
  }
  calendarScreen.classList.toggle('drag-toward-open',canPreview&&dy<0);
  calendarScreen.classList.toggle('drag-toward-closed',canPreview&&dy>0);
- const target=canPreview&&progress>=.42?nextDragView(handleStartView,dy):handleStartView;
  if(target!==handlePreviewView){
   handlePreviewView=target;
   if(view!==target){view=target;renderCalendar()}
  }
+ // Keep the panel in its open layout while previewing the full timeline, so it
+ // can expand continuously rather than replacing the layout in one jump.
+ if(handleStartView==='month'&&target==='all'&&dy>0)calendarScreen.classList.add('panel-open');
 }
 handle.addEventListener('pointerdown',e=>{
  if(e.button!==undefined&&e.button!==0)return;
