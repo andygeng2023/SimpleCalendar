@@ -85,8 +85,7 @@
 @media(prefers-reduced-motion:reduce){#calendarScreen .date-grid,#calendarScreen .selected-panel{animation:none!important;transition:none!important}}
 
 /* Drag the full calendar sheet, not just its grab handle */
-#calendarScreen{position:relative}
-#calendarScreen .selected-panel.is-dragging{z-index:4;transform:none!important;overflow:hidden!important;flex-shrink:0!important;transition:none!important;max-height:calc(100dvh - 150px)}
+#calendarScreen .selected-panel.is-dragging{position:relative;z-index:4;transform:none!important;overflow:hidden!important;flex-shrink:0!important;transition:none!important;max-height:100%}
 #calendarScreen .selected-panel.is-dragging .panel-head{display:flex!important;flex:0 0 auto}
 #calendarScreen .selected-panel.is-dragging #panelEvents{display:block!important;flex:1 1 auto;min-height:0;overflow:auto}
 #calendarScreen .selected-panel.is-dragging .panel-handle{flex:0 0 42px}
@@ -231,18 +230,12 @@ if(matches.length){const h=document.createElement('div');h.className='search-sec
 });
 let handleY=0,handleX=0,handleStartView='all',handleStartHeight=42,handleDragging=false;
 const handle=$('selectedPanel').querySelector('.handle-grip'),selectedPanel=$('selectedPanel');
-function clearHandleInline(){['position','top','right','bottom','left','width','margin','height','flex','flex-basis','flex-grow','flex-shrink','min-height','max-height','overflow','transition'].forEach(p=>selectedPanel.style.removeProperty(p))}
+function clearHandleInline(){['height','flex','flex-basis','flex-grow','flex-shrink','min-height','max-height','overflow','transition'].forEach(p=>selectedPanel.style.removeProperty(p))}
 function handleDragHeight(dy){return Math.max(42,Math.min(window.innerHeight-150,handleStartHeight-dy))}
 function applyDragHeight(height){
- const h=Math.max(42,Math.min(window.innerHeight-150,height));
- /* Keep the sheet's bottom fixed so its top edge follows the pointer. */
- selectedPanel.style.position='absolute';
- selectedPanel.style.top='auto';
- selectedPanel.style.bottom='0';
- selectedPanel.style.left='-20px';
- selectedPanel.style.right='-20px';
- selectedPanel.style.width='auto';
- selectedPanel.style.margin='0';
+ const maxHeight=Math.max(42,$('calendarScreen').clientHeight-150);
+ const h=Math.max(42,Math.min(maxHeight,height));
+ /* Use the existing flex column: keep the panel's bottom in normal flow and resize its basis. */
  selectedPanel.style.height=h+'px';
  selectedPanel.style.flex='0 0 '+h+'px';
  selectedPanel.style.flexBasis=h+'px';
