@@ -107,6 +107,14 @@
 
 /* Natural ease-out snapping for the split-pane divider */
 #calendarScreen .selected-panel.is-snapping{transition:none!important}
+
+/* Keep the calendar row flexible while resizing the bottom panel.
+   The panel's bottom stays in normal flow; its top tracks the pointer. */
+#calendarScreen.panel-dragging .calendar-scroller{flex:1 1 0!important;height:0!important;min-height:0!important;max-height:none!important;overflow:hidden!important;scroll-behavior:auto!important}
+#calendarScreen.panel-dragging .selected-panel{min-height:0!important;max-height:calc(100% - 42px)!important;overflow:hidden!important;transition:none!important}
+#calendarScreen.panel-dragging .selected-panel .handle-grip,
+#calendarScreen.panel-dragging .selected-panel .handle-grip:active,
+#calendarScreen.panel-dragging .selected-panel .handle-grip.dragging{background:#aab7aa!important;transform:none!important;width:58px!important;transition:none!important}
 </style>
 </head>
 <body><div class="app">
@@ -254,6 +262,7 @@ function nearestViewForHeight(height){
 function endHandleDrag(){
  if(!handleDragging)return;
  handleDragging=false;
+ $('calendarScreen').classList.remove('panel-dragging');
  handle.classList.remove('dragging');
  selectedPanel.classList.remove('is-dragging','is-snapping');
  const releasedHeight=selectedPanel.getBoundingClientRect().height;
@@ -268,6 +277,7 @@ handle.addEventListener('pointerdown',e=>{
  handleStartView=view;
  handleStartHeight=Math.max(42,selectedPanel.getBoundingClientRect().height);
  handleDragging=true;
+ $('calendarScreen').classList.add('panel-dragging');
  selectedPanel.classList.remove('is-snapping');
  selectedPanel.classList.add('is-dragging');
  handle.classList.add('dragging');
@@ -288,6 +298,7 @@ handle.addEventListener('pointercancel',()=>{
  if(!handleDragging)return;
  view=handleStartView;
  handleDragging=false;
+ $('calendarScreen').classList.remove('panel-dragging');
  handle.classList.remove('dragging');
  selectedPanel.classList.remove('is-dragging','is-snapping');
  clearHandleInline();
