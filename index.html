@@ -64,6 +64,10 @@
 #calendarScreen.is-view-dragging.panel-open .selected-panel{flex:1 1 0;min-height:0;overflow:hidden}
 #calendarScreen.is-view-dragging.panel-open .calendar-scroller{flex:0 0 var(--drag-scroller-height,180px)!important;height:var(--drag-scroller-height,180px)!important;max-height:none!important;overflow:hidden;transform:none!important}
 #calendarScreen .selected-panel{transition:transform .3s cubic-bezier(.2,.75,.25,1)}#calendarScreen .calendar-scroller{transition:none}#calendarScreen.is-view-settling .selected-panel{transition:flex-basis .3s cubic-bezier(.2,.75,.25,1),transform .3s cubic-bezier(.2,.75,.25,1)}#calendarScreen.is-view-settling .calendar-scroller{transition:flex-basis .3s cubic-bezier(.2,.75,.25,1),height .3s cubic-bezier(.2,.75,.25,1),max-height .3s cubic-bezier(.2,.75,.25,1)}
+@keyframes calendarSettle{from{opacity:.72;transform:translateY(12px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+#calendarScreen.is-view-settling .calendar-scroller{animation:calendarSettle .44s cubic-bezier(.22,.75,.25,1) both;transform-origin:top center}
+#calendarScreen.is-view-settling .selected-panel{transition:flex-basis .44s cubic-bezier(.22,.75,.25,1),transform .44s cubic-bezier(.22,.75,.25,1)}
+#calendarScreen.is-view-settling .calendar-scroller{transition:flex-basis .44s cubic-bezier(.22,.75,.25,1),height .44s cubic-bezier(.22,.75,.25,1),max-height .44s cubic-bezier(.22,.75,.25,1)}
 @media(prefers-reduced-motion:reduce){#calendarScreen .selected-panel,#calendarScreen .calendar-scroller,#calendarScreen .date-cell{transition:none!important}}
 
 #calendarScreen:not(.panel-open) .selected-panel{position:relative;z-index:4;flex:0 0 42px;min-height:42px;overflow:visible;transform:translateY(var(--panel-drag-y,0px));will-change:transform;transition:transform .32s cubic-bezier(.2,.75,.25,1)}
@@ -264,7 +268,7 @@ function settleHandleDrag(target){
  view=target;
  renderCalendar(true);
  clearTimeout(viewSettleTimer);
- viewSettleTimer=setTimeout(()=>calendarScreen.classList.remove('is-view-settling'),360);
+ viewSettleTimer=setTimeout(()=>calendarScreen.classList.remove('is-view-settling'),480);
 }
 function finishHandleDrag(e){
  if(!handleDragging)return;
