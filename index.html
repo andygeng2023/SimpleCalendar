@@ -6,148 +6,26 @@
 <title>Daymark — Calendar</title>
 <style>
 :root{--green:#36834b;--green-dark:#236638;--green-pale:#eaf4eb;--ink:#20251f;--muted:#81877f;--line:#e8ebe6;--paper:#fff;--bg:#f8faf7;--radius:18px;font-family:Inter,-apple-system,BlinkMacSystemFo[...]
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg)}main{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}button,input,texta[...]
-.app{max-width:740px;margin:0 auto;height:100dvh;overflow:hidden;background:var(--paper);position:relative;padding-bottom:76px;box-shadow:0 0 40px #16240e08;display:flex;flex-direction:column}.top[...]
-.calendar-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 0 8px;flex:0 0 auto}.month-title{font-size:23px;font-weight:760;letter-spacing:-.8px}.month-contr[...]
-
-/* Polished mobile layout and form hierarchy */
-:root{--ink:#17231a;--muted:#5d6a5e;--line:#dfe6dd;--green:#287641;--green-dark:#1d5d32;--green-pale:#e6f3e8}
-.topbar{padding:14px clamp(24px,6vw,38px) 10px;min-height:66px;gap:14px}.brand{font-size:22px;letter-spacing:-.7px}.top-actions{display:flex;align-items:center;justify-content:flex-end;gap:9px;fle[...]
-.screen{padding-left:clamp(24px,6vw,38px);padding-right:clamp(24px,6vw,38px)}.section-heading{font-size:23px;letter-spacing:-.55px;margin-bottom:13px}.weekday{font-size:clamp(38px,9vw,56px);letter[...]
-.modal{width:min(740px,100%);max-height:calc(100dvh - env(safe-area-inset-top) - 8px);overflow-y:auto;padding:clamp(24px,6vw,34px) clamp(24px,6vw,38px) max(30px,env(safe-area-inset-bottom));border[...]
-@media(max-width:430px){.topbar{padding-left:22px;padding-right:22px;gap:8px}.brand{font-size:20px}.top-actions{gap:6px}.top-action{padding:0 11px;font-size:13px;min-height:40px}.screen{padding-le[...]
-#modalBackdrop[data-mode="normal"] #modalTitle{display:none}#modalBackdrop[data-mode="normal"] .modal-top{margin-bottom:14px}#modalBackdrop[data-mode="normal"] .title-field input{margin-top:0}.han[...]
-
-/* Calendar actions, transitions, and search-result refinements */
-.top-actions{display:none!important}
-#calendarScreen .panel-head{align-items:center;gap:8px}
-#calendarScreen .panel-actions{margin-left:auto;display:flex;justify-content:flex-end;gap:8px;flex-shrink:0}
-.panel-text-btn{min-height:38px;padding:0 12px;border:1px solid #d5e0d5;border-radius:11px;background:#fff;color:#24452c;font-size:13px;font-weight:750;white-space:nowrap;transition:background .16s ease,border-color .16s ease,transform .16s ease,box-shadow .2s ease}
-.panel-text-btn.primary-action{background:var(--green);border-color:var(--green);color:#fff}
-.panel-text-btn:active{transform:scale(.96)}
-.search-results{display:flex;flex-direction:column;gap:4px;max-height:36%;overflow-y:auto;overscroll-behavior:contain}
-.search-section-label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#5a6a5c;margin:8px 0 2px}
-.date-suggestions{display:flex;flex-direction:column;gap:4px}
-.date-suggestion{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;border:1px solid #dce5dc;border-radius:10px;background:#fff;padding:8px 11px;color:var(--ink);cursor:pointer;transition:transform .18s ease,box-shadow .2s ease,border-color .18s ease,background .18s ease}
-.date-suggestion:active{background:#eaf4eb}
-.suggestion-weekday{font-size:11px;color:#637365;font-weight:550}
-.search-event-list .event{grid-template-columns:18px minmax(0,1fr) auto;gap:8px;padding:7px 9px;margin:0 0 5px;border:1px solid #e0e7df;border-radius:10px;background:#fff}
-.search-event-list .check{width:17px;height:17px;margin-top:2px;border-radius:5px}
-.search-event-list .event-title{font-size:13px;line-height:1.25}
-.search-event-list .event-meta{font-size:11px;line-height:1.35;margin-top:3px}
-.search-event-list .tag{font-size:10px;padding:2px 6px;margin-top:4px}
-.search-event-list .edit-btn{width:27px!important;height:27px!important;min-height:27px;border-radius:8px}
-.search-event-date{font-size:11px;color:#536654;font-weight:750;margin:7px 2px 3px}
-.screen.active{animation:screenEnter .24s cubic-bezier(.2,.75,.25,1) both}
-@keyframes screenEnter{from{opacity:.55;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
-.calendar-scroller.view-enter{animation:viewEnter .34s cubic-bezier(.2,.75,.25,1) both}#calendarScreen .panel-head,#calendarScreen .panel-actions,.month-controls button{transition:opacity .22s ease,transform .22s ease}
-#calendarScreen .search-wrap:has(+ #searchResults:not(:empty)){margin-bottom:3px}
-@media(max-width:430px){.panel-text-btn{font-size:12px;padding:0 9px;min-height:36px}.panel-head h2{font-size:17px}.search-results{max-height:32%}.search-event-list .event{padding:6px 7px}}
-@media(prefers-reduced-motion:reduce){.screen.active,.calendar-scroller.view-enter,.timeline-month{animation:none!important;transition:none!important}}
-
-/* Professional motion layer */
-:root{
-  --motion-fast:180ms;
-  --motion-base:260ms;
-  --motion-slow:420ms;
-  --ease-standard:cubic-bezier(.22,1,.36,1);
-  --ease-soft:cubic-bezier(.2,.8,.2,1);
-  --shadow-soft:0 14px 32px rgba(32,53,35,.08),0 8px 18px rgba(32,53,35,.04);
-}
-button,.nav-btn,.top-action,.month-controls button,.panel-text-btn,.date-cell,.date-suggestion,.event,.search-results,.empty,.modal,.toast,.calendar-scroller,.selected-panel,.day-hero,.panel,.banner,.title-field input,.field input,.field select,.field textarea{
-  transition:transform var(--motion-fast) var(--ease-standard),box-shadow var(--motion-base) var(--ease-standard),background-color var(--motion-fast) ease,border-color var(--motion-fast) ease,opacity var(--motion-base) ease,filter var(--motion-base) ease;
-}
-button:hover,.nav-btn:hover,.top-action:hover,.month-controls button:hover,.panel-text-btn:hover,.date-suggestion:hover,
-.date-cell:hover,.event:hover{transform:translateY(-1px);box-shadow:var(--shadow-soft)}
-button:active,.nav-btn:active,.top-action:active,.month-controls button:active,.panel-text-btn:active,.date-suggestion:active,
-.date-cell:active,.event:active{transform:translateY(0) scale(.985)}
-.nav-btn{position:relative;overflow:hidden}
-.nav-btn::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.35),transparent);opacity:0;transition:opacity .2s ease}
-.nav-btn:hover::after,.nav-btn.active::after{opacity:1}
-.nav-btn.active{background:rgba(54,131,75,.07);color:var(--green);box-shadow:inset 0 0 0 1px rgba(54,131,75,.12)}
-.day-hero{animation:heroIn .44s var(--ease-soft) both}
-@keyframes heroIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-.date-cell,.search-event-list .event,.date-suggestion{animation:cardIn .26s var(--ease-soft) both}
-@keyframes cardIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-.selected-panel{will-change:transform}
-.selected-panel .panel-head,.selected-panel #panelEvents{transition:opacity .2s ease,transform .2s ease}
-.selected-panel.panel-open .panel-head,.selected-panel.panel-open #panelEvents{opacity:1;transform:translateY(0)}
-.selected-panel:not(.panel-open) .panel-head,.selected-panel:not(.panel-open) #panelEvents{opacity:0;transform:translateY(6px)}
-.modal-backdrop.open .modal{animation:modalIn .28s var(--ease-standard) both}
-@keyframes modalIn{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-.modal-backdrop:not(.open) .modal{animation:modalOut .18s ease forwards}
-@keyframes modalOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(14px) scale(.98)}}
-.toast.show{animation:toastIn .26s var(--ease-standard) both}
-@keyframes toastIn{from{opacity:0;transform:translate(-50%,8px) scale(.98)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
-.field input,.field select,.field textarea{transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;background:var(--paper)}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(54,131,75,.6);box-shadow:0 0 0 4px rgba(54,131,75,.08);outline:none}
-.empty{animation:fadeUp .22s var(--ease-standard) both}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg)}main{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}button,input,textarea,select{font:inherit}button{cursor:pointer;border:none;background:none;padding:0}svg{display:block}body{display:flex;align-items:stretch;justify-content:center;background:
+radial-gradient(120% 120% at 50% 0%, rgba(255,255,255,.96), rgba(240,247,241,.92) 34%, rgba(233,244,234,.92) 100%);color:var(--ink)}
+.app{max-width:740px;margin:0 auto;height:100dvh;overflow:hidden;background:rgba(255,255,255,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);position:relative;padding-bottom:76px;box-shadow:0 30px 80px rgba(21,35,26,.08),0 8px 20px rgba(21,35,26,.03);display:flex;flex-direction:column;border:1px solid rgba(48,78,52,.08);border-width:0 1px 0 1px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:18px clamp(24px,6vw,38px) 8px;min-height:66px;gap:14px}.brand{font-size:22px;font-weight:820;letter-spacing:-.7px;color:var(--ink)}.brand span{color:var(--green)}
+main{flex:1;display:flex;flex-direction:column;overflow:hidden}.screen{display:none;flex:1;min-height:0;overflow:hidden;padding-left:clamp(24px,6vw,38px);padding-right:clamp(24px,6vw,38px)}.screen.active{display:flex;flex-direction:column;animation:screenEnter .28s var(--ease-soft) both}
+@keyframes screenEnter{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+.day-hero{padding:8px 0 18px;margin-top:4px;display:flex;flex-direction:column;gap:8px;animation:heroIn .42s var(--ease-soft) both}
+@keyframes heroIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.weekday{font-size:clamp(38px,9vw,56px);font-weight:760;letter-spacing:-.06em;line-height:.92}
+.long-date{font-size:14px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.section-heading{margin:10px 0 14px;font-size:23px;letter-spacing:-.55px}.event-list{display:flex;flex-direction:column;gap:10px;overflow:auto;padding-right:4px}.event{display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:center;gap:10px;padding:11px 12px;background:linear-gradient(180deg,#fff,#f7faf7);border:1px solid rgba(56,75,60,.09);border-radius:14px;box-shadow:0 8px 22px rgba(28,47,32,.03);transition:transform .18s ease, box-shadow .2s ease, border-color .18s ease}
+.event:hover{transform:translateY(-1px);box-shadow:0 16px 28px rgba(28,47,32,.06);border-color:rgba(54,131,75,.22)}
+.check{appearance:none;width:16px;height:16px;border:1.5px solid rgba(48,78,52,.25);border-radius:5px;background:#fff;position:relative;transition:all .15s ease}.check:checked{background:var(--green);border-color:var(--green);box-shadow:0 0 0 3px rgba(54,131,75,.12)}.check:checked::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.event-main{min-width:0}.event-title{font-size:14px;font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.event-meta{margin-top:2px;font-size:11px;color:var(--muted);line-height:1.35}.event-side{display:flex;align-items:center;gap:8px}.tag{display:inline-flex;align-items:center;justify-content:center;padding:4px 8px;border-radius:999px;background:var(--green-pale);color:var(--green-dark);font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.edit-btn{width:32px;height:32px;border-radius:10px;border:1px solid rgba(61,83,66,.08);background:#fff;color:var(--ink);display:grid;place-items:center;transition:all .18s ease}.edit-btn:hover{background:#f5f8f4;transform:translateY(-1px)}
+.search-wrap{position:relative;display:flex;align-items:center;gap:8px;padding:0 12px;border:1px solid rgba(58,77,61,.09);border-radius:14px;background:linear-gradient(180deg,#fff,#f7faf7);box-shadow:0 8px 20px rgba(20,38,28,.02)}.search-wrap svg{width:18px;height:18px;color:var(--muted)}.search-wrap input{flex:1;height:44px;border:none;background:transparent;color:var(--ink);outline:none;padding:0}.search-wrap input::placeholder{color:var(--muted)}
+.search-results{display:flex;flex-direction:column;gap:6px;max-height:36%;overflow-y:auto;overscroll-behavior:contain;margin-top:10px;padding-right:4px}.search-section-label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#5a6a5c;margin:8px 0 2px}.date-suggestion{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;border:1px solid rgba(66,84,69,.08);border-radius:12px;background:#fff;padding:8px 11px;color:var(--ink);cursor:pointer;transition:transform .18s ease,box-shadow .2s ease,border-color .18s ease,background .18s ease}.date-suggestion:hover{transform:translateY(-1px);box-shadow:0 14px 26px rgba(39,62,46,.05);border-color:rgba(54,131,75,.25)}
+.suggestion-weekday{font-size:11px;color:#637365;font-weight:550}.search-event-list .event{padding:9px 10px;margin:0 0 5px}
+.empty{padding:18px 14px;border:1px dashed rgba(49,72,55,.18);border-radius:14px;background:rgba(240,246,240,.8);color:var(--muted);font-size:13px;text-align:center;animation:fadeUp .22s var(--ease-standard) both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.search-event-list .event:hover,.date-suggestion:hover,.date-cell:hover{border-color:rgba(54,131,75,.38)}
-.search-results::-webkit-scrollbar{width:8px}
-.search-results::-webkit-scrollbar-thumb{background:rgba(95,118,101,.25);border-radius:999px}
-.search-results::-webkit-scrollbar-track{background:transparent}
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
-}
-
-/* Quick event AI feedback */
-#quickPreview{white-space:normal;overflow-wrap:anywhere;margin:10px 0 12px;padding:10px 12px;border:1px solid #dce7dc;border-radius:12px;background:#f5faf5;color:#2b4830;line-height:1.5}
-#quickSave[disabled]{opacity:.65;cursor:wait}
-
-/* Follow-the-handle interaction and full-timeline layout correction */
-#calendarScreen:not(.panel-open) .selected-panel{position:relative;z-index:4;flex:0 0 42px;min-height:42px;overflow:visible;transform:translateY(var(--panel-drag-y,0px));will-change:transform;tran[...]
-#calendarScreen:not(.panel-open) .selected-panel .panel-head,
-#calendarScreen:not(.panel-open) .selected-panel #panelEvents{display:none!important}
-#calendarScreen:not(.panel-open) .selected-panel .panel-handle{height:42px;min-height:42px;flex-basis:42px}
-#calendarScreen.panel-open .selected-panel{transform:translateY(0);transition:transform .32s cubic-bezier(.2,.75,.25,1)}
-#calendarScreen.panel-open .selected-panel .panel-head{display:flex!important}
-#calendarScreen.panel-open .selected-panel #panelEvents{display:block!important}
-#calendarScreen .selected-panel.is-dragging{transition:none!important}
-#calendarScreen .selected-panel .handle-grip{cursor:grab;touch-action:none}
-#eventForm{width:100%;min-width:0}
-#eventForm .form-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:0;width:100%;min-width:0;align-items:stretch}
-#eventForm .field,#eventForm .field.full{grid-column:1;min-width:0;width:100%;max-width:100%}
-#eventForm .field input,#eventForm .field select,#eventForm .field textarea{width:100%;min-width:0;max-width:100%;display:block}
-#eventForm .field textarea{box-sizing:border-box}
-@media(min-width:600px){#eventForm .form-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:18px;row-gap:0}#eventForm .field.full{grid-column:1/-1}}
-</style>
-</head>
-<body><div class="app">
-<header class="topbar"><div class="brand">day<span>mark</span></div><div class="top-actions" aria-hidden="true"></div></header>
-<main>
-<section id="homeScreen" class="screen active"><div class="day-hero"><div class="weekday" id="heroWeekday">Monday</div><div class="long-date" id="heroDate"></div></div><h2 class="section-heading">Today</h2><div class="event-list" id="todayList"></div><div class="empty-state" id="todayEmpty"></div></section>
-<section id="calendarScreen" class="screen"><div class="search-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><input id="searchInput" type="search" placeholder="Search dates or events" aria-label="Search calendar"/></div><div class="search-results" id="searchResults"></div><div class="calendar-toolbar"><button class="month-controls" id="prevMonth" aria-label="Previous month">◀</button><h2 class="month-title" id="monthTitle"></h2><button class="month-controls" id="nextMonth" aria-label="Next month">▶</button></div><div class="calendar-grid" id="calendarGrid"></div><div class="selected-panel" id="selectedPanel"><div class="panel-handle"><div class="handle-grip"></div></div><div class="panel-head"><div class="panel-date" id="panelDate"></div><div class="panel-actions"><button class="panel-text-btn" id="panelQuick">Quick add</button><button class="panel-text-btn primary-action" id="panelAdd">Add</button></div></div><div id="panelEvents" class="panel-events"></div></div></section>
-<section id="settingsScreen" class="screen settings-empty" aria-label="Settings"></section>
-</main>
-<nav class="bottom-nav" aria-label="Main navigation"><button class="nav-btn active" data-screen="home"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></button><button class="nav-btn" data-screen="calendar"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></button><button class="nav-btn" data-screen="settings"><svg viewBox="0 0 24 24"><path d="M12 2.5v2.2m0 16.6v2.2M4.93 4.93l1.55 1.55m11.04 11.04 1.55 1.55M2.5 12h2.2m16.6 0h2.2M4.93 19.07l1.55-1.55m11.04-11.04 1.55-1.55M12 7.5A4.5 4.5 0 1 1 12 16.5A4.5 4.5 0 0 1 12 7.5Z"/></svg></button></nav>
-</div>
-<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><div class="modal-top"><h2 id="modalTitle">New event</h2><button class="icon-button" id="closeModal" aria-label="Close">✕</button></div><form id="quickForm"><textarea id="quickText" rows="3" placeholder="Describe the event… e.g. Dinner with Sam on Friday at 7pm"></textarea><div class="quick-preview" id="quickPreview"></div><button class="primary" id="quickSave" type="button">Save event</button></form><form id="eventForm" hidden><div class="form-grid"><div class="field full"><label>Title<input id="eventTitle" type="text" required></label></div><div class="field full"><label>Description<textarea id="eventDescription" rows="3"></textarea></label></div><div class="field"><label>Date<input id="eventDate" type="date" required></label></div><div class="field"><label>Location<input id="eventLocation" type="text"></label></div><div class="field"><label>Start time<input id="eventStart" type="time"></label></div><div class="field"><label>End time<input id="eventEnd" type="time"></label></div><div class="field"><label>Repeat<select id="eventRepeat"><option value="none">Does not repeat</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select></label></div><div class="field"><label>Tag<input id="eventTag" type="text" placeholder="Planning, Work, Personal"></label></div><div class="field full actions"><button class="secondary" type="button" id="deleteEvent">Delete</button><button class="primary" type="submit">Save</button></div></div></form></div></div>
-<div class="toast" id="toast" aria-live="polite"></div>
-<script>
-(function(){
-'use strict';
-const $=id=>document.getElementById(id), pad=n=>String(n).padStart(2,'0'), dateKey=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()), parseDate=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}, formatDate=(d,opts={weekday:'long',day:'numeric',month:'long',year:'numeric'})=>new Intl.DateTimeFormat('en-GB',opts).format(d);
-let selected=new Date(), cursor=new Date(selected), view='all', modalMode='normal', toastTimer;
-const key='daymark-events-v1';
-let events=[];try{events=JSON.parse(localStorage.getItem(key)||'[]');if(!Array.isArray(events))events=[]}catch(_){events=[]}
-if(!events.length){const ds=dateKey(new Date());events=[{id:crypto.randomUUID(),title:'Plan your week',date:ds,start:'09:00',end:'09:30',repeat:'none',done:false,tag:'Planning',description:'A little time to map the week ahead.'}];persist()}
-function persist(){localStorage.setItem(key,JSON.stringify(events))}
-function renderHome(){const now=new Date();$('heroWeekday').textContent=formatDate(now,{weekday:'long'});$('heroDate').textContent=formatDate(now,{day:'numeric',month:'long',year:'numeric'});const list=onDay(now).slice(0,3);$('todayList').innerHTML=list.length?list.map(eventMarkup).join(''):'<div class="empty">No events today</div>';bindEventActions($('todayList'));}
-function onDay(d){return events.filter(e=>eventOccurs(e,d)).sort((a,b)=>(a.start||'99:99').localeCompare(b.start||'99:99'))}
-function eventOccurs(e,d){if(e.date===dateKey(d))return true;if(!e.repeat||e.repeat==='none')return false;const start=parseDate(e.date),delta=Math.round((parseDate(dateKey(d))-start)/86400000);if(delta<0)return false;switch(e.repeat){case'daily':return true;case'weekly':return delta%7===0;case'monthly':return d.getDate()===start.getDate();case'yearly':return d.getMonth()===start.getMonth()&&d.getDate()===start.getDate();default:return false}}
-function eventMarkup(e){return '<article class="event '+(e.done?'done':'')+'"><input class="check" type="checkbox" aria-label="Mark '+esc(e.title)+' completed" data-check="'+e.id+'" '+(e.done?'checked':'')+'><div class="event-main"><div class="event-title">'+esc(e.title)+'</div><div class="event-meta">'+esc(timeText(e))+'</div></div><div class="event-side"><span class="tag">'+esc(e.tag||'General')+'</span><button class="edit-btn" data-edit="'+e.id+'" aria-label="Edit '+esc(e.title)+'">✎</button></div></article>'}
-function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
-function timeText(e){if(!e.start&&!e.end)return 'All day';if(e.start&&e.end)return e.start+' – '+e.end;if(e.start)return e.start;return 'Until '+e.end}
-function bindEventActions(root){root.querySelectorAll('[data-check]').forEach(el=>el.addEventListener('change',()=>{const e=events.find(x=>x.id===el.dataset.check);if(e){e.done=el.checked;persist();renderHome();renderCalendar();}}));root.querySelectorAll('[data-edit]').forEach(el=>el.addEventListener('click',()=>openNormal(events.find(x=>x.id===el.dataset.edit))))}
-function renderCalendar(){const grid=$('calendarGrid');const firstDay=new Date(cursor.getFullYear(),cursor.getMonth(),1);const start=new Date(firstDay);start.setDate(start.getDate()-((firstDay.getDay()+6)%7));const monthDays=[];for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);monthDays.push(d)}
-$('monthTitle').textContent=new Intl.DateTimeFormat('en-GB',{month:'long',year:'numeric'}).format(cursor);
-grid.innerHTML='';const weekdays=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];weekdays.forEach(w=>{const el=document.createElement('div');el.className='weekday-label';el.textContent=w;grid.appendChild(el);});monthDays.forEach(d=>{const btn=document.createElement('button');btn.type='button';btn.className='date-cell'+(d.getMonth()!==cursor.getMonth()?' muted':'')+(dateKey(d)===dateKey(selected)?' selected':'');btn.dataset.date=dateKey(d);btn.textContent=d.getDate();if(onDay(d).length){const dot=document.createElement('span');dot.className='dot';btn.appendChild(dot)}btn.addEventListener('click',()=>{selected=d;cursor=new Date(d.getFullYear(),d.getMonth(),1);renderCalendar();renderPanel();renderHome();});grid.appendChild(btn);});renderPanel();}
-function renderPanel(){const list=onDay(selected);$('panelDate').textContent=formatDate(selected,{weekday:'long',day:'numeric',month:'long'});$('panelEvents').innerHTML=list.length?list.map(e=>'<div class="event mini">'+esc(e.title)+'<span>'+esc(timeText(e))+'</span></div>').join(''):'<div class="empty">No events</div>'}
-function switchScreen(name){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===name+'Screen'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.screen===name));}
-function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2600)}
-function openModal(mode){modalMode=mode;$('modalBackdrop').dataset.mode=mode;$('modalTitle').textContent=mode==='quick'?'Quick add':'New event';$('quickForm').hidden=mode!=='quick';$('eventForm').hidden=mode!=='normal';$('modalBackdrop').classList.add('open');}
-function closeModal(){ $('modalBackdrop').classList.remove('open'); }
-function openNormal(item){switchScreen('calendar');openModal('normal');const form=$('eventForm');form.dataset.editId=item?.id||'';$('#eventTitle').value=item?.title||'';$('#eventDescription').value=item?.description||'';$('#eventDate').value=item?.date||dateKey(selected);$('#eventLocation').value=item?.location||'';$('#eventStart').value=item?.start||'';$('#eventEnd').value=item?.end||'';$('#eventRepeat').value=item?.repeat||'none';$('#eventTag').value=item?.tag||'';$('#deleteEvent').style.display=item?'inline-block':'none';}
-$('panelQuick').addEventListener('click',()=>openModal('quick'));$('panelAdd').addEventListener('click',()=>openNormal());$('closeModal').addEventListener('click',closeModal);$('#quickSave').addEventListener('click',()=>{const raw=$('#quickText').value.trim();if(!raw){showToast('Describe your event first.');return;}const event={id:crypto.randomUUID(),title:raw,date:dateKey(selected),start:'09:00',end:'09:30',repeat:'none',done:false,tag:'Quick add',description:''};events.push(event);persist();closeModal();$('#quickText').value='';renderHome();renderCalendar();showToast('Event added');});$('#eventForm').addEventListener('submit',e=>{e.preventDefault();const id=$('#eventForm').dataset.editId;const item={id:id||crypto.randomUUID(),title:$('#eventTitle').value.trim(),description:$('#eventDescription').value.trim(),date:$('#eventDate').value,location:$('#eventLocation').value.trim(),start:$('#eventStart').value,end:$('#eventEnd').value,repeat:$('#eventRepeat').value,tag:$('#eventTag').value.trim()||'General',done:false};if(!item.title||!item.date){showToast('Add a title and date.');return;}if(id){const index=events.findIndex(x=>x.id===id);if(index>=0)events[index]={...events[index],...item};}else{events.push(item);}persist();closeModal();renderHome();renderCalendar();showToast('Event saved');});$('#deleteEvent').addEventListener('click',()=>{const id=$('#eventForm').dataset.editId;if(id){events=events.filter(x=>x.id!==id);persist();closeModal();renderHome();renderCalendar();showToast('Event removed');}});document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchScreen(b.dataset.screen)));document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});$('prevMonth').addEventListener('click',()=>{cursor=new Date(cursor.getFullYear(),cursor.getMonth()-1,1);renderCalendar();});$('nextMonth').addEventListener('click',()=>{cursor=new Date(cursor.getFullYear(),cursor.getMonth()+1,1);renderCalendar();});renderHome();renderCalendar();switchScreen('home');})();
-</script></body></html>
+.calendar-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 10px;flex:0 0 auto}.month-title{font-size:23px;font-weight:760;letter-spacing:-.8px;min-width:0;flex:1;text-align:center}.month-controls{width:32px;height:32px;border-radius:10px;border:1px solid rgba(52,74,58,.08);background:#fff;color:var(--ink);display:grid;place-items:center;transition:all .18s ease}.month-controls:hover{background:#f6faf7;transform:translateY(-1px)}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;flex:1;overflow:auto;padding:8px 0 0}.weekday-label{font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:0 0 4px;text-align:center}.date-cell{position:relative;aspect-ratio:1;display:flex;align-items:center;justify-content:center;padding:2px;background:linear-gradient(180deg,#fff,#f8faf8);border:1px solid rgba(53,73,58,.08);border-radius:12px;color:var(--ink);font-weight:700;box-shadow:0 6px 18px rgba(22,36,28,.02);transition:transform .18s ease, box-shadow .22s ease, border-color .18s ease, background .18s ease}.date-cell.muted{color:rgba(60,74,62,.44)}.date-cell:hover{transform:translateY(-1px);border-color:rgba(54,131,75,.22);box-shadow:0 14px 26px rgba(32,53,35,.06)}.date-cell.selected{background:linear-gradient(180deg,#eaf5ec,#dfeee2);border-color:rgba(54,131,75,.3);box-shadow:0 14px 28px rgba(54,131,75,.12)}.date-cell .dot{position:absolute;bottom:7px;width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(54,131,75,.08)}
+.selected-panel{position:relative;display:flex;flex-direction:column;flex:0 0 auto;background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(246,250,247,.92));border:1px solid rgba(55,77,61,.08);border-radius:18px 18px 0 0;box-shadow:0 -14px 30px rgba(32,53,35,.04);overflow:hidden;transition:transform .24s var(--ease-standard), box-shadow .24s ease}.#calendarScreen:not(.panel-open) .selected-panel{...}
