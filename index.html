@@ -85,7 +85,8 @@
 @media(prefers-reduced-motion:reduce){#calendarScreen .date-grid,#calendarScreen .selected-panel{animation:none!important;transition:none!important}}
 
 /* Drag the full calendar sheet, not just its grab handle */
-#calendarScreen .selected-panel.is-dragging{position:relative;z-index:4;transform:translate3d(0,0,0)!important;overflow:hidden!important;flex-shrink:0!important;transition:none!important;max-height:calc(100dvh - 150px)}
+#calendarScreen{position:relative}
+#calendarScreen .selected-panel.is-dragging{z-index:4;transform:none!important;overflow:hidden!important;flex-shrink:0!important;transition:none!important;max-height:calc(100dvh - 150px)}
 #calendarScreen .selected-panel.is-dragging .panel-head{display:flex!important;flex:0 0 auto}
 #calendarScreen .selected-panel.is-dragging #panelEvents{display:block!important;flex:1 1 auto;min-height:0;overflow:auto}
 #calendarScreen .selected-panel.is-dragging .panel-handle{flex:0 0 42px}
@@ -230,7 +231,7 @@ if(matches.length){const h=document.createElement('div');h.className='search-sec
 });
 let handleY=0,handleX=0,handleStartView='all',handleStartHeight=42,handleDragging=false;
 const handle=$('selectedPanel').querySelector('.handle-grip'),selectedPanel=$('selectedPanel');
-function clearHandleInline(){['height','flex','flex-basis','flex-grow','flex-shrink','min-height','max-height','overflow','transition'].forEach(p=>selectedPanel.style.removeProperty(p))}
+function clearHandleInline(){['position','top','right','bottom','left','width','margin','height','flex','flex-basis','flex-grow','flex-shrink','min-height','max-height','overflow','transition'].forEach(p=>selectedPanel.style.removeProperty(p))}
 function handleDragHeight(dy){return Math.max(42,Math.min(window.innerHeight-150,handleStartHeight-dy))}
 function applyDragHeight(height){
  const h=Math.max(42,Math.min(window.innerHeight-150,height));
