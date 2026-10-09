@@ -63,7 +63,7 @@
 #calendarScreen.is-view-dragging:not(.panel-open) .selected-panel .panel-handle{flex:0 0 42px}
 #calendarScreen.is-view-dragging.panel-open .selected-panel{flex:1 1 0;min-height:0;overflow:hidden}
 #calendarScreen.is-view-dragging.panel-open .calendar-scroller{flex:0 0 var(--drag-scroller-height,180px)!important;height:var(--drag-scroller-height,180px)!important;max-height:none!important;overflow:hidden;transform:none!important}
-#calendarScreen .selected-panel{transition:flex-basis .3s cubic-bezier(.2,.75,.25,1),transform .3s cubic-bezier(.2,.75,.25,1)}
+#calendarScreen .selected-panel{transition:flex-basis .3s cubic-bezier(.2,.75,.25,1),transform .3s cubic-bezier(.2,.75,.25,1)}#calendarScreen .calendar-scroller{transition:flex-basis .3s cubic-bezier(.2,.75,.25,1),height .3s cubic-bezier(.2,.75,.25,1),max-height .3s cubic-bezier(.2,.75,.25,1)}
 @media(prefers-reduced-motion:reduce){#calendarScreen .selected-panel,#calendarScreen .calendar-scroller,#calendarScreen .date-cell{transition:none!important}}
 
 #calendarScreen:not(.panel-open) .selected-panel{position:relative;z-index:4;flex:0 0 42px;min-height:42px;overflow:visible;transform:translateY(var(--panel-drag-y,0px));will-change:transform;transition:transform .32s cubic-bezier(.2,.75,.25,1)}
@@ -208,7 +208,7 @@ if(matches.length){const h=document.createElement('div');h.className='search-sec
 });
 let handleY=0,handleX=0,handleLastY=0,handleStartView='all',handleStartScrollerHeight=0,handleDragging=false,handlePreviewView=null;
 const handle=$('selectedPanel').querySelector('.handle-grip'),selectedPanel=$('selectedPanel'),calendarScreen=$('calendarScreen');
-function clearHandleDrag(){handleDragging=false;handlePreviewView=null;handle.classList.remove('dragging');selectedPanel.classList.remove('is-dragging');calendarScreen.classList.remove('is-view-dragging','drag-toward-open','drag-toward-closed');['--drag-progress','--drag-panel-size','--drag-close-size','--drag-scroller-max','--drag-scroller-scale','--drag-scroller-height'].forEach(k=>calendarScreen.style.removeProperty(k));selectedPanel.style.removeProperty('--panel-drag-y')}
+function clearHandleDrag(keepLayoutPreview=false){handleDragging=false;handlePreviewView=null;handle.classList.remove('dragging');selectedPanel.classList.remove('is-dragging');if(keepLayoutPreview)return;calendarScreen.classList.remove('is-view-dragging','drag-toward-open','drag-toward-closed');['--drag-progress','--drag-panel-size','--drag-close-size','--drag-scroller-max','--drag-scroller-scale','--drag-scroller-height'].forEach(k=>calendarScreen.style.removeProperty(k));selectedPanel.style.removeProperty('--panel-drag-y')}
 function nextDragView(startView,dy){if(dy<0)return startView==='all'?'month':startView==='month'?'week':'week';return startView==='week'?'month':startView==='month'?'all':'all'}
 function handleDragCanChange(startView,dy){return (startView==='all'&&dy<0)||(startView==='month'&&dy!==0)||(startView==='week'&&dy>0)}
 function updateDragPreview(dy){
@@ -218,25 +218,19 @@ function updateDragPreview(dy){
  calendarScreen.style.setProperty('--drag-progress',String(progress));
  calendarScreen.style.setProperty('--drag-panel-size',Math.max(0,Math.min(-dy,Math.min(window.innerHeight*.55,420)))+'px');
  calendarScreen.style.setProperty('--drag-close-size',Math.max(0,Math.min(Math.abs(dy),Math.min(window.innerHeight*.55,420)))+'px');
- const target=canPreview&&progress>=.42?nextDragView(handleStartView,dy):handleStartView;
- if(handleStartView!=='all'||(target!=='all'&&handleStartView==='all')){
+ const previewTarget=canPreview&&progress>=.42?nextDragView(handleStartView,dy):handleStartView;
+ if(handleStartView!=='all'){
   const maxHeight=Math.max(150,calendarScreen.clientHeight-(calendarScreen.querySelector('.search-wrap')?.offsetHeight||0)-80);
-  let base=handleStartScrollerHeight;
-  if(handleStartView==='all')base=Math.min(maxHeight,Math.max(150,window.innerHeight*.42));
-  const targetHeight=handleStartView==='all'
-   ?Math.max(78,Math.min(maxHeight,base-Math.abs(dy)))
-   :Math.max(78,Math.min(maxHeight,base+Math.abs(dy)));
+  const base=Math.min(maxHeight,Math.max(78,handleStartScrollerHeight));
+  const targetHeight=Math.max(78,Math.min(maxHeight,base+Math.abs(dy)));
   calendarScreen.style.setProperty('--drag-scroller-height',targetHeight+'px');
  }
  calendarScreen.classList.toggle('drag-toward-open',canPreview&&dy<0);
  calendarScreen.classList.toggle('drag-toward-closed',canPreview&&dy>0);
- if(target!==handlePreviewView){
-  handlePreviewView=target;
-  if(view!==target){view=target;renderCalendar()}
- }
- // Keep the panel in its open layout while previewing the full timeline, so it
- // can expand continuously rather than replacing the layout in one jump.
- if(handleStartView==='month'&&target==='all'&&dy>0)calendarScreen.classList.add('panel-open');
+ // Preview only the layout while dragging. Re-rendering here replaces the grid
+ // and resets panel-open, which causes the drag to snap instead of following
+ // the pointer. The actual view is committed once, on pointerup.
+ handlePreviewView=previewTarget;
 }
 handle.addEventListener('pointerdown',e=>{
  if(e.button!==undefined&&e.button!==0)return;
@@ -253,19 +247,27 @@ handle.addEventListener('pointermove',e=>{
  const dy=Math.max(-Math.min(window.innerHeight*.55,420),Math.min(window.innerHeight*.45,handleLastY-handleY));
  updateDragPreview(dy);
 });
+function settleHandleDrag(target){
+ if(!handleDragging)return;
+ const changed=target!==handleStartView;
+ // Remove temporary drag dimensions and commit the view in the same frame.
+ // CSS transitions interpolate from the last finger-controlled layout to the
+ // destination layout; failed/cancelled gestures do not rebuild the calendar.
+ clearHandleDrag();
+ if(!changed)return;
+ view=target;
+ renderCalendar();
+}
 function finishHandleDrag(e){
  if(!handleDragging)return;
  const dy=(e.clientY??handleLastY)-handleY,dx=(e.clientX??handleX)-handleX;
- const valid=Math.abs(dy)>=35&&Math.abs(dy)>=Math.abs(dx)*1.15&&handleDragCanChange(handleStartView,dy);
- const target=valid?nextDragView(handleStartView,dy):handleStartView;
- const previous=view;
- clearHandleDrag();
- view=target;
- if(view!==previous||view!==handleStartView)renderCalendar();
+ const threshold=Math.max(55,window.innerHeight*.075);
+ const valid=Math.abs(dy)>=threshold&&Math.abs(dy)>=Math.abs(dx)*1.15&&handleDragCanChange(handleStartView,dy);
+ settleHandleDrag(valid?nextDragView(handleStartView,dy):handleStartView);
 }
 handle.addEventListener('pointerup',finishHandleDrag);
-handle.addEventListener('pointercancel',()=>{if(!handleDragging)return;const restore=handleStartView;clearHandleDrag();if(view!==restore){view=restore;renderCalendar()}});
-handle.addEventListener('lostpointercapture',()=>{if(handleDragging){const restore=handleStartView;clearHandleDrag();if(view!==restore){view=restore;renderCalendar()}}});
+handle.addEventListener('pointercancel',()=>{if(handleDragging)settleHandleDrag(handleStartView)});
+handle.addEventListener('lostpointercapture',()=>{if(handleDragging)settleHandleDrag(handleStartView)});
 let timelineBusy=false,viewWheelLock=false;$('calendarScroller').addEventListener('scroll',()=>{if(view!=='all'||timelineBusy)return;const sc=$('calendarScroller'),grid=$('dateGrid'),sections=grid.querySelectorAll('.timeline-month');if(!sections.length)return;const scRect=sc.getBoundingClientRect();let nearest=sections[0];for(const sec of sections){if(sec.getBoundingClientRect().top<=scRect.top+35)nearest=sec;else break}const shown=nearest.dataset.month.split('-').map(Number);cursor=new Date(shown[0],shown[1]-1,1,12);$('monthTitle').textContent=fmtDate(cursor,{month:'long',year:'numeric'});if(sc.scrollTop<220){timelineBusy=true;const first=sections[0],parts=first.dataset.month.split('-').map(Number),newMonth=new Date(parts[0],parts[1]-12,1,12),oldHeight=sc.scrollHeight;grid.insertAdjacentHTML('afterbegin',Array.from({length:12},(_,i)=>makeMonth(new Date(newMonth.getFullYear(),newMonth.getMonth()+i,1,12))).join(''));bindDateCells(grid);sc.scrollTop+=sc.scrollHeight-oldHeight;requestAnimationFrame(()=>{timelineBusy=false})}else if(sc.scrollHeight-sc.scrollTop-sc.clientHeight<260){timelineBusy=true;const last=sections[sections.length-1],parts=last.dataset.month.split('-').map(Number),newMonth=new Date(parts[0],parts[1],1,12);grid.insertAdjacentHTML('beforeend',Array.from({length:12},(_,i)=>makeMonth(new Date(newMonth.getFullYear(),newMonth.getMonth()+i,1,12))).join(''));bindDateCells(grid);requestAnimationFrame(()=>{timelineBusy=false})}}, {passive:true});const calendarScroller=$('calendarScroller');calendarScroller.addEventListener('wheel',e=>{if(Math.abs(e.deltaY)<18||view==='all'||viewWheelLock||$('searchInput').value.trim())return;if(Math.abs(e.deltaY)<Math.abs(e.deltaX)*1.15)return;e.preventDefault();viewWheelLock=true;const direction=e.deltaY>0?1:-1;const next=view==='month'?(direction>0?'week':'all'):(direction>0?'week':'month');if(next!==view){view=next;renderCalendar()}setTimeout(()=>{viewWheelLock=false},520)},{passive:false});let touchX=0,touchY=0;$('calendarScreen').addEventListener('touchstart',e=>{touchX=e.touches[0].clientX;touchY=e.touches[0].clientY},{passive:true});$('calendarScreen').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-touchX,dy=e.changedTouches[0].clientY-touchY;if(Math.abs(dx)>65&&Math.abs(dx)>Math.abs(dy)*1.25&&view!=='all'){cursor=new Date(cursor.getFullYear(),cursor.getMonth()+(dx<0?1:-1),1,12);selected=new Date(cursor.getFullYear(),cursor.getMonth(),Math.min(selected.getDate(),new Date(cursor.getFullYear(),cursor.getMonth()+1,0).getDate()),12);renderCalendar()}},{passive:true});
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
