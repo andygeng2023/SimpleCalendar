@@ -249,12 +249,14 @@ handle.addEventListener('pointermove',e=>{
 });
 function settleHandleDrag(target){
  if(!handleDragging)return;
- clearHandleDrag(true);
+ const changed=target!==handleStartView;
+ // Remove temporary drag dimensions and commit the view in the same frame.
+ // CSS transitions interpolate from the last finger-controlled layout to the
+ // destination layout; failed/cancelled gestures do not rebuild the calendar.
+ clearHandleDrag();
+ if(!changed)return;
  view=target;
  renderCalendar();
- // Keep drag geometry active through the render, then release the temporary
- // dimensions so CSS can animate from the finger position to the final layout.
- requestAnimationFrame(()=>clearHandleDrag(false));
 }
 function finishHandleDrag(e){
  if(!handleDragging)return;
