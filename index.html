@@ -232,7 +232,7 @@ if(matches.length){const h=document.createElement('div');h.className='search-sec
 });
 let handleY=0,handleX=0,handleLastY=0,handleStartView='all',handleStartHeight=42,handleDragging=false,handleSnapTimer=0;
 const handle=$('selectedPanel').querySelector('.handle-grip'),selectedPanel=$('selectedPanel');
-function clearHandleInline(){['height','flex-basis','min-height','max-height','overflow'].forEach(p=>selectedPanel.style.removeProperty(p))}
+function clearHandleInline(){['height','flex-basis','flex-grow','flex-shrink','min-height','max-height','overflow'].forEach(p=>selectedPanel.style.removeProperty(p))}
 function handleDragHeight(dy){return Math.max(42,Math.min(window.innerHeight-150,handleStartHeight-dy))}
 function snapViewForDrag(dy,dx){
  if(Math.abs(dy)<28||Math.abs(dy)<Math.abs(dx)*1.15)return handleStartView;
@@ -244,7 +244,7 @@ handle.addEventListener('pointerdown',e=>{
  handleStartView=view;handleStartHeight=Math.max(42,selectedPanel.getBoundingClientRect().height);
  handleDragging=true;selectedPanel.classList.remove('is-snapping');selectedPanel.classList.add('is-dragging');
  handle.classList.add('dragging');selectedPanel.style.setProperty('--panel-drag-y','0px');
- selectedPanel.style.height=handleStartHeight+'px';selectedPanel.style.flexBasis=handleStartHeight+'px';
+ selectedPanel.style.height=handleStartHeight+'px';selectedPanel.style.flexGrow='0';selectedPanel.style.flexShrink='0';selectedPanel.style.flexBasis=handleStartHeight+'px';
  selectedPanel.style.minHeight='42px';selectedPanel.style.maxHeight='calc(100dvh - 150px)';selectedPanel.style.overflow='hidden';
  handle.setPointerCapture?.(e.pointerId);
 });
@@ -252,7 +252,7 @@ handle.addEventListener('pointermove',e=>{
  if(!handleDragging)return;
  handleLastY=e.clientY;
  const dy=e.clientY-handleY,h=handleDragHeight(dy);
- selectedPanel.style.height=h+'px';selectedPanel.style.flexBasis=h+'px';
+ selectedPanel.style.height=h+'px';selectedPanel.style.flexGrow='0';selectedPanel.style.flexShrink='0';selectedPanel.style.flexBasis=h+'px';
 });
 function finishHandleDrag(e){
  if(!handleDragging)return;
@@ -266,7 +266,7 @@ function finishHandleDrag(e){
  else if(targetView==='month')targetHeight=Math.min(window.innerHeight*.31,window.innerHeight-150);
  else targetHeight=Math.min(window.innerHeight*.39,window.innerHeight-150);
  targetHeight=Math.max(42,targetHeight);
- selectedPanel.style.height=targetHeight+'px';selectedPanel.style.flexBasis=targetHeight+'px';
+ selectedPanel.style.height=targetHeight+'px';selectedPanel.style.flexGrow='0';selectedPanel.style.flexShrink='0';selectedPanel.style.flexBasis=targetHeight+'px';
  clearTimeout(handleSnapTimer);
  handleSnapTimer=setTimeout(()=>{
   if(targetView!==previousView){view=targetView;calendarViewMotion=dy<0?'view-change-up':'view-change-down'}
@@ -279,7 +279,7 @@ handle.addEventListener('pointercancel',e=>{
  if(!handleDragging)return;handleDragging=false;handle.classList.remove('dragging');selectedPanel.classList.remove('is-dragging');selectedPanel.classList.add('is-snapping');
  selectedPanel.style.transition='height .4s cubic-bezier(.16,1,.3,1), flex-basis .4s cubic-bezier(.16,1,.3,1)';
  selectedPanel.style.height=(handleStartView==='all'?42:Math.min(window.innerHeight*(handleStartView==='week'?.39:.31),window.innerHeight-150))+'px';
- selectedPanel.style.flexBasis=selectedPanel.style.height;
+ selectedPanel.style.flexGrow='0';selectedPanel.style.flexShrink='0';selectedPanel.style.flexBasis=selectedPanel.style.height;
  clearTimeout(handleSnapTimer);handleSnapTimer=setTimeout(()=>{clearHandleInline();selectedPanel.style.removeProperty('transition');selectedPanel.classList.remove('is-snapping')},420);
 });
 let timelineBusy=false,viewWheelLock=false;$('calendarScroller').addEventListener('scroll',()=>{if(view!=='all'||timelineBusy)return;const sc=$('calendarScroller'),grid=$('dateGrid'),sections=grid.querySelectorAll('.timeline-month');if(!sections.length)return;const scRect=sc.getBoundingClientRect();let nearest=sections[0];for(const sec of sections){if(sec.getBoundingClientRect().top<=scRect.top+35)nearest=sec;else break}const shown=nearest.dataset.month.split('-').map(Number);cursor=new Date(shown[0],shown[1]-1,1,12);$('monthTitle').textContent=fmtDate(cursor,{month:'long',year:'numeric'});if(sc.scrollTop<220){timelineBusy=true;const first=sections[0],parts=first.dataset.month.split('-').map(Number),newMonth=new Date(parts[0],parts[1]-12,1,12),oldHeight=sc.scrollHeight;grid.insertAdjacentHTML('afterbegin',Array.from({length:12},(_,i)=>makeMonth(new Date(newMonth.getFullYear(),newMonth.getMonth()+i,1,12))).join(''));bindDateCells(grid);sc.scrollTop+=sc.scrollHeight-oldHeight;requestAnimationFrame(()=>{timelineBusy=false})}else if(sc.scrollHeight-sc.scrollTop-sc.clientHeight<260){timelineBusy=true;const last=sections[sections.length-1],parts=last.dataset.month.split('-').map(Number),newMonth=new Date(parts[0],parts[1],1,12);grid.insertAdjacentHTML('beforeend',Array.from({length:12},(_,i)=>makeMonth(new Date(newMonth.getFullYear(),newMonth.getMonth()+i,1,12))).join(''));bindDateCells(grid);requestAnimationFrame(()=>{timelineBusy=false})}}, {passive:true});const calendarScroller=$('calendarScroller');calendarScroller.addEventListener('wheel',e=>{if(Math.abs(e.deltaY)<18||view==='all'||viewWheelLock||$('searchInput').value.trim())return;if(Math.abs(e.deltaY)<Math.abs(e.deltaX)*1.15)return;e.preventDefault();viewWheelLock=true;const direction=e.deltaY>0?1:-1;const previous=view;const next=view==='month'?(direction>0?'week':'all'):(direction>0?'week':'month');if(next!==view){view=next;calendarViewMotion=(direction>0?'view-change-up':'view-change-down');renderCalendar()}setTimeout(()=>{viewWheelLock=false},520)},{passive:false});let touchX=0,touchY=0;$('calendarScreen').addEventListener('touchstart',e=>{touchX=e.touches[0].clientX;touchY=e.touches[0].clientY},{passive:true});$('calendarScreen').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-touchX,dy=e.changedTouches[0].clientY-touchY;if(Math.abs(dx)>65&&Math.abs(dx)>Math.abs(dy)*1.25&&view!=='all'){calendarTransition=dx<0?'slide-next':'slide-prev';cursor=new Date(cursor.getFullYear(),cursor.getMonth()+(dx<0?1:-1),1,12);selected=new Date(cursor.getFullYear(),cursor.getMonth(),Math.min(selected.getDate(),new Date(cursor.getFullYear(),cursor.getMonth()+1,0).getDate()),12);renderCalendar()}},{passive:true});
