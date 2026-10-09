@@ -285,7 +285,8 @@ function endHandleDrag(){
  if(!handleDragging)return;
  handleDragging=false;
  handle.classList.remove('dragging');
- selectedPanel.classList.remove('is-dragging','is-snapping');
+ /* Keep the expanded content visible until the eased settle finishes. */
+ selectedPanel.classList.remove('is-snapping');
  const releasedHeight=selectedPanel.getBoundingClientRect().height;
  const target=viewStops().reduce((best,item)=>Math.abs(item.height-releasedHeight)<Math.abs(best.height-releasedHeight)?item:best);
  $('calendarScreen').classList.add('panel-settling');
