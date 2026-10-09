@@ -128,6 +128,13 @@
 #calendarScreen.panel-settling .selected-panel .handle-grip,
 #calendarScreen.panel-settling .selected-panel .handle-grip:active,
 #calendarScreen.panel-settling .selected-panel .handle-grip.dragging{background:#aab7aa!important;transform:none!important;width:58px!important;transition:none!important}
+
+/* Stable drag appearance and stable resting geometry: never recolour the panel or grip,
+   and retain the measured snap height after the transition to prevent a final jump. */
+#calendarScreen .selected-panel{background:#f8faf7!important}
+#calendarScreen .selected-panel .handle-grip,
+#calendarScreen .selected-panel .handle-grip:active,
+#calendarScreen .selected-panel .handle-grip.dragging{background:#aab7aa!important;transform:none!important;width:58px!important;transition:none!important}
 </style>
 </head>
 <body><div class="app">
@@ -266,19 +273,25 @@ function applyDragHeight(height){
 function viewStops(){
  const max=dragMaxHeight(),area=$('calendarScreen').clientHeight;
  return [
-  {view:'all',height:42},
-  {view:'month',height:Math.max(42,Math.min(max,area*.31))},
-  {view:'week',height:Math.max(42,Math.min(max,area*.39))}
+  {view:'all',height:82},
+  {view:'month',height:Math.max(82,Math.min(max,area*.31))},
+  {view:'week',height:Math.max(82,Math.min(max,area*.39))}
  ];
 }
 function nearestViewForHeight(height){
  return viewStops().reduce((best,item)=>Math.abs(item.height-height)<Math.abs(best.height-height)?item:best).view;
 }
-function finishHandleSettle(targetView){
+function finishHandleSettle(target){
  $('calendarScreen').classList.remove('panel-dragging','panel-settling');
  selectedPanel.classList.remove('is-dragging','is-snapping');
- clearHandleInline();
- view=targetView;
+ /* Keep the exact settled height so switching from drag CSS to resting CSS cannot jump. */
+ selectedPanel.style.height=target.height+'px';
+ selectedPanel.style.flex='0 0 '+target.height+'px';
+ selectedPanel.style.flexBasis=target.height+'px';
+ selectedPanel.style.flexGrow='0';
+ selectedPanel.style.flexShrink='0';
+ selectedPanel.style.minHeight=target.height+'px';
+ view=target.view;
  renderCalendar();
 }
 function endHandleDrag(){
@@ -293,7 +306,7 @@ function endHandleDrag(){
  selectedPanel.style.transition='height 260ms cubic-bezier(.22,.8,.24,1), flex-basis 260ms cubic-bezier(.22,.8,.24,1)';
  applyDragHeight(target.height);
  let finished=false;
- const finish=()=>{if(finished)return;finished=true;selectedPanel.removeEventListener('transitionend',onEnd);finishHandleSettle(target.view)};
+ const finish=()=>{if(finished)return;finished=true;selectedPanel.removeEventListener('transitionend',onEnd);finishHandleSettle(target)};
  const onEnd=e=>{if(e.target===selectedPanel&&(e.propertyName==='height'||e.propertyName==='flex-basis'))finish()};
  selectedPanel.addEventListener('transitionend',onEnd);
  setTimeout(finish,310);
