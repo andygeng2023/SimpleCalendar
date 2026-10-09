@@ -235,6 +235,14 @@ function clearHandleInline(){['position','top','right','bottom','left','width','
 function handleDragHeight(dy){return Math.max(42,Math.min(window.innerHeight-150,handleStartHeight-dy))}
 function applyDragHeight(height){
  const h=Math.max(42,Math.min(window.innerHeight-150,height));
+ /* Keep the sheet's bottom fixed so its top edge follows the pointer. */
+ selectedPanel.style.position='absolute';
+ selectedPanel.style.top='auto';
+ selectedPanel.style.bottom='0';
+ selectedPanel.style.left='-20px';
+ selectedPanel.style.right='-20px';
+ selectedPanel.style.width='auto';
+ selectedPanel.style.margin='0';
  selectedPanel.style.height=h+'px';
  selectedPanel.style.flex='0 0 '+h+'px';
  selectedPanel.style.flexBasis=h+'px';
