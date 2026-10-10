@@ -183,6 +183,40 @@
 .app.settings-dark .nav-btn{background:transparent;color:#9aa89d}
 .app.settings-dark .nav-btn.active{color:var(--green)}
 
+
+/* Normal event form: consistent field geometry and textarea alignment */
+#eventForm{display:block;width:100%;min-width:0}
+#eventForm[hidden]{display:none}
+#eventForm .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;column-gap:16px;row-gap:2px;width:100%;min-width:0}
+#eventForm .field,#eventForm .field.full{display:flex;flex-direction:column;align-self:stretch;gap:7px;min-width:0;width:100%;max-width:100%;margin:0 0 15px;grid-column:auto}
+#eventForm .field.full{grid-column:1/-1}
+#eventForm .field label{display:block;min-height:16px;margin:0;font-size:12px;font-weight:700;line-height:1.3;letter-spacing:.02em;color:#59675b}
+#eventForm .field input,#eventForm .field select,#eventForm .field textarea{box-sizing:border-box;display:block;width:100%;min-width:0;max-width:100%;margin:0;border:1px solid #d9e1d9;border-radius:12px;background:#fff;color:#202a21;padding:12px 13px;font:inherit;font-size:15px;line-height:1.4;box-shadow:none}
+#eventForm .field input,#eventForm .field select{height:48px;min-height:48px}
+#eventForm .field textarea{height:auto;min-height:100px;resize:vertical;overflow:auto;white-space:pre-wrap}
+#eventForm .title-field{margin-bottom:12px!important}
+#eventForm .title-field input{height:58px;min-height:58px;font-size:22px;font-weight:700;letter-spacing:-.4px}
+#eventForm .title-field input::placeholder{color:#8a958b;opacity:1}
+#eventForm .description-field textarea{min-height:94px}
+#eventForm .field input:focus,#eventForm .field select:focus,#eventForm .field textarea:focus{outline:none;border-color:#579265;box-shadow:0 0 0 3px #57926520}
+#eventForm .field input::placeholder,#eventForm .field textarea::placeholder{color:#929c93;opacity:1}
+#eventForm .primary.icon-only{display:flex;justify-content:center;align-items:center;gap:9px;width:100%;height:50px;min-height:50px;margin:4px 0 0;padding:0 18px;border-radius:13px}
+#eventForm .primary.icon-only:before{content:'Save event';font-size:15px}
+#eventForm .primary.icon-only svg{width:19px;height:19px;flex:0 0 19px}
+#eventForm .delete-event{width:100%!important;height:44px!important;display:flex!important;justify-content:center;align-items:center;gap:8px;margin:10px 0 0!important;padding:0 14px!important;border-radius:12px}
+#eventForm .delete-event:after{content:'Delete event';font-size:14px}
+.app.settings-dark #eventForm .field label{color:#b7c5b9}
+.app.settings-dark #eventForm .field input,.app.settings-dark #eventForm .field select,.app.settings-dark #eventForm .field textarea{background:#1b241e;color:#e4ebe5;border-color:#3a493d}
+.app.settings-dark #eventForm .field input::placeholder,.app.settings-dark #eventForm .field textarea::placeholder{color:#859488}
+.app.settings-dark #eventForm .field input:focus,.app.settings-dark #eventForm .field select:focus,.app.settings-dark #eventForm .field textarea:focus{border-color:#79b887;box-shadow:0 0 0 3px #79b88724}
+.app.settings-dark #eventForm .primary.icon-only{background:#477b50;color:#fff}
+@media(max-width:520px){
+ #eventForm .form-grid{grid-template-columns:minmax(0,1fr);column-gap:0;row-gap:0}
+ #eventForm .field,#eventForm .field.full{grid-column:1/-1;margin-bottom:13px}
+ #eventForm .title-field{margin-bottom:10px!important}
+ #eventForm .title-field input{font-size:21px}
+}
+
 </style>
 </head>
 <body><div class="app">
@@ -233,7 +267,7 @@
 </main>
 <nav class="bottom-nav" aria-label="Main navigation"><button class="nav-btn active" data-screen="home" aria-label="Home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.5 12 3.7l8.5 6.8"/><path d="M5.5 9.5V20h5v-6h3v6h5V9.5"/></svg><span>Home</span></button><button class="nav-btn" data-screen="calendar" aria-label="Calendar"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="16" rx="2.2"/><path d="M7.5 3.5v4M16.5 3.5v4M3.5 10h17"/><path d="M7.5 13.5h.01M12 13.5h.01M16.5 13.5h.01M7.5 17h.01M12 17h.01"/></svg><span>Calendar</span></button><button class="nav-btn" data-screen="settings" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.2 13.8a7.5 7.5 0 0 0 0-3.6l1.3-1-1.8-3.1-1.6.6a7.4 7.4 0 0 0-3.1-1.8L13.7 3h-3.4l-.3 1.9a7.4 7.4 0 0 0-3.1 1.8l-1.6-.6-1.8 3.1 1.3 1a7.5 7.5 0 0 0 0 3.6l-1.3 1 1.8 3.1 1.6-.6a7.4 7.4 0 0 0 3.1 1.8l.3 1.9h3.4l.3-1.9a7.4 7.4 0 0 0 3.1-1.8l1.6.6 1.8-3.1z"/></svg><span>Settings</span></button></nav>
 </div>
-<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><div class="modal-top"><h2 id="modalTitle">New event</h2><button class="close-btn" id="closeModal" aria-label="Close"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div id="quickForm"><div class="field"><label for="quickText">Describe your event</label><textarea id="quickText" placeholder="e.g. Dentist tomorrow at 10:07 to 11am, repeat weekly"></textarea></div><p class="nlp-help">Try “Team meeting tomorrow 10:07 to 20:00”, “Gym every Monday at 6pm”, or “Lunch on 14 June at noon”. We’ll interpret common dates, times and repeats.</p><div id="quickPreview" class="nlp-help"></div><button class="primary icon-only" id="quickSave" aria-label="Create event" title="Create event"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></button></div><form id="eventForm" hidden><div class="form-grid"><div class="field full title-field"><input id="eventTitle" required placeholder="New event" aria-label="Event title"></div><div class="field full description-field"><textarea id="eventDescription" placeholder="Add a description…" aria-label="Event description"></textarea></div><div class="field"><label for="eventDate">Date *</label><input id="eventDate" type="date" required></div><div class="field"><label for="eventLocation">Location</label><input id="eventLocation" placeholder="Add a place"></div><div class="field"><label for="eventStart">Start time</label><input id="eventStart" type="time"></div><div class="field"><label for="eventEnd">End time</label><input id="eventEnd" type="time"></div><div class="field"><label for="eventRepeat">Repeat</label><select id="eventRepeat"><option value="none">Never</option><option value="daily">Every day</option><option value="weekly">Every week</option><option value="monthly">Every month</option><option value="yearly">Every year</option></select></div><div class="field"><label for="eventPeople">People</label><input id="eventPeople" placeholder="Names, separated by commas"></div><div class="field full"><label for="eventNotes">Notes</label><textarea id="eventNotes" placeholder="Anything else to remember"></textarea></div></div><button class="primary icon-only" type="submit" aria-label="Save event" title="Save event"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></button></form></div></div><div class="toast" id="toast" role="status"></div>
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><div class="modal-top"><h2 id="modalTitle">New event</h2><button class="close-btn" id="closeModal" aria-label="Close"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div id="quickForm"><div class="field"><label for="quickText">Describe your event</label><textarea id="quickText" placeholder="e.g. Dentist tomorrow at 10:07 to 11am, repeat weekly"></textarea></div><p class="nlp-help">Try “Team meeting tomorrow 10:07 to 20:00”, “Gym every Monday at 6pm”, or “Lunch on 14 June at noon”. We’ll interpret common dates, times and repeats.</p><div id="quickPreview" class="nlp-help"></div><button class="primary icon-only" id="quickSave" aria-label="Create event" title="Create event"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></button></div><form id="eventForm" hidden><div class="form-grid"><div class="field full title-field"><label for="eventTitle">Event name *</label><input id="eventTitle" required placeholder="What is this event?" aria-label="Event title"></div><div class="field full description-field"><label for="eventDescription">Description</label><textarea id="eventDescription" placeholder="Add details about this event…" aria-label="Event description"></textarea></div><div class="field"><label for="eventDate">Date *</label><input id="eventDate" type="date" required></div><div class="field"><label for="eventLocation">Location</label><input id="eventLocation" placeholder="Add a place"></div><div class="field"><label for="eventStart">Start time</label><input id="eventStart" type="time"></div><div class="field"><label for="eventEnd">End time</label><input id="eventEnd" type="time"></div><div class="field"><label for="eventRepeat">Repeat</label><select id="eventRepeat"><option value="none">Never</option><option value="daily">Every day</option><option value="weekly">Every week</option><option value="monthly">Every month</option><option value="yearly">Every year</option></select></div><div class="field"><label for="eventPeople">People</label><input id="eventPeople" placeholder="Names, separated by commas"></div><div class="field full"><label for="eventNotes">Notes</label><textarea id="eventNotes" placeholder="Anything else to remember"></textarea></div></div><button class="primary icon-only" type="submit" aria-label="Save event" title="Save event"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></button></form></div></div><div class="toast" id="toast" role="status"></div>
 <script>
 (function(){
 'use strict';
