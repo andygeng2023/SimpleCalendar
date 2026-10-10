@@ -1,0 +1,45 @@
+name: Quality checks
+
+on:
+  push:
+    branches: [main, 'chore/**', 'refactor/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Format source files
+        run: npm run format
+      - name: Commit formatter changes to this branch
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add .
+            git commit -m "style: apply Prettier formatting"
+            git push
+          fi
+      - name: Validate JavaScript syntax
+        run: |
+          node --check app.js
+          node --check sw.js
+          node --check playwright.config.js
+          node --check tests/pwa.spec.js
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run browser smoke tests
+        run: npm test
