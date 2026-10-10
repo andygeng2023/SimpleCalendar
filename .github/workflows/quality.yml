@@ -1,0 +1,37 @@
+name: Quality checks
+
+on:
+  push:
+    branches: [main, 'chore/**', 'refactor/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Format source files
+        run: npm run format
+      - name: Verify formatting
+        run: npm run format:check
+      - name: Validate JavaScript syntax
+        run: |
+          node --check app.js
+          node --check sw.js
+          node --check playwright.config.js
+          node --check tests/pwa.spec.js
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run browser smoke tests
+        run: npm test
