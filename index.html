@@ -85,6 +85,10 @@
 #eventForm .field textarea{box-sizing:border-box}
 @media(min-width:600px){#eventForm .form-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:18px;row-gap:0}#eventForm .field.full{grid-column:1/-1}}
 
+/* Drag release uses a position/size glide, not fades or cell entrance effects. */
+#calendarScreen.is-release-flip .calendar-scroller,#calendarScreen.is-release-flip .selected-panel{transition:none!important}
+#calendarScreen.is-release-flip .timeline-month{animation:none!important}
+
 /* Keep ordinary view changes layout-stable; animate size only after handle drags. */
 #calendarScreen:not(.is-view-settling) .calendar-scroller{transition:none!important}
 #calendarScreen.is-view-settling .calendar-scroller{transition:flex-basis .3s cubic-bezier(.2,.75,.25,1),height .3s cubic-bezier(.2,.75,.25,1),max-height .3s cubic-bezier(.2,.75,.25,1)}
@@ -130,6 +134,33 @@ function makeMonth(d){const first=monthStart(d),offset=(first.getDay()+6)%7,days
 function bindDateCells(root){root.querySelectorAll('[data-date]:not([data-bound])').forEach(b=>{b.dataset.bound='1';b.addEventListener('click',()=>{selected=parseDate(b.dataset.date);cursor=new Date(selected);view='month';renderCalendar();renderPanel();renderHome()})})}
 function renderCalendar(settleTransition=false){
  const screen=$('calendarScreen'),sc=$('calendarScroller'),grid=$('dateGrid');
+ if(settleTransition){
+  const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const canGlide=screen.classList.contains('active')&&typeof sc.animate==='function'&&!reduced;
+  const beforeScroller=sc.getBoundingClientRect(),beforePanel=$('selectedPanel').getBoundingClientRect();
+  clearTimeout(viewSettleTimer);
+  screen.classList.add('is-view-settling','is-release-flip');
+  // Keep the pointer-driven layout in place until the destination DOM exists.
+  renderCalendarContent(true);
+  screen.classList.remove('is-view-dragging','drag-toward-open','drag-toward-closed');
+  ['--drag-progress','--drag-panel-size','--drag-close-size','--drag-scroller-max','--drag-scroller-scale','--drag-scroller-height'].forEach(k=>screen.style.removeProperty(k));
+  $('selectedPanel').style.removeProperty('--panel-drag-y');
+  void sc.offsetWidth;
+  const afterScroller=sc.getBoundingClientRect(),afterPanel=$('selectedPanel').getBoundingClientRect();
+  const glide=(el,from,to)=>{
+   if(!canGlide||!from.width||!from.height||!to.width||!to.height)return;
+   const dx=from.left-to.left,dy=from.top-to.top,sx=from.width/to.width,sy=from.height/to.height;
+   if(Math.abs(dx)<1&&Math.abs(dy)<1&&Math.abs(sx-1)<.015&&Math.abs(sy-1)<.015)return;
+   const anim=el.animate([
+    {transformOrigin:'top left',transform:'translate('+dx+'px,'+dy+'px) scale('+sx+','+sy+')'},
+    {transformOrigin:'top left',transform:'translate(0,0) scale(1,1)'}
+   ],{duration:440,easing:'cubic-bezier(.22,.75,.25,1)',fill:'both'});
+   anim.onfinish=()=>anim.cancel();
+  };
+  if(canGlide){glide(sc,beforeScroller,afterScroller);glide($('selectedPanel'),beforePanel,afterPanel);}
+  viewSettleTimer=setTimeout(()=>screen.classList.remove('is-view-settling','is-release-flip'),canGlide?470:0);
+  return;
+ }
  const canAnimate=screen.classList.contains('active')&&typeof sc.animate==='function'&&!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
  const oldCells=new Map(),oldVisibleCells=[];
  if(canAnimate){
@@ -143,15 +174,13 @@ function renderCalendar(settleTransition=false){
    if(!old||old.outside&&!outside)oldCells.set(key,{rect:r,outside,node:el});
   });
  }
- if(canAnimate&&!settleTransition){
+ if(canAnimate){
   clearTimeout(viewSettleTimer);
   screen.classList.add('is-view-settling');
  }
- // Rebuild once, then FLIP the actual date cells. Animating only the outer
- // scroller cannot animate cells that are removed/recreated by the view switch.
  renderCalendarContent(true);
  if(!canAnimate){
-  if(!settleTransition)screen.classList.remove('is-view-settling');
+  screen.classList.remove('is-view-settling');
   return;
  }
  requestAnimationFrame(()=>requestAnimationFrame(()=>{
@@ -163,7 +192,6 @@ function renderCalendar(settleTransition=false){
    if(!old||old.classList.contains('outside')&&!outside)newCells.set(key,el);
   });
   const duration=460,easing='cubic-bezier(.22,.75,.25,1)';
-  // Cells that vanish from the new view fade out from their old screen position.
   oldVisibleCells.forEach(entry=>{
    const representative=oldCells.get(entry.key);
    if(newCells.has(entry.key)&&representative?.node===entry.node)return;
@@ -179,16 +207,13 @@ function renderCalendar(settleTransition=false){
    if(from&&to.width&&to.height){
     const dx=from.left-to.left,dy=from.top-to.top,sx=from.width/to.width,sy=from.height/to.height;
     if(Math.abs(dx)>1||Math.abs(dy)>1||Math.abs(sx-1)>.015||Math.abs(sy-1)>.015){
-     el.animate([
-      {transform:'translate('+dx+'px,'+dy+'px) scale('+sx+','+sy+')',opacity:.84},
-      {transform:'translate(0,0) scale(1,1)',opacity:1}
-     ],{duration,easing,fill:'both'});
+     el.animate([{transform:'translate('+dx+'px,'+dy+'px) scale('+sx+','+sy+')',opacity:.84},{transform:'translate(0,0) scale(1,1)',opacity:1}],{duration,easing,fill:'both'});
     }
    }else{
     el.animate([{opacity:0,transform:'scale(.88)'},{opacity:1,transform:'scale(1)'}],{duration:300,easing,fill:'both'});
    }
   });
-  if(!settleTransition)viewSettleTimer=setTimeout(()=>screen.classList.remove('is-view-settling'),520);
+  viewSettleTimer=setTimeout(()=>screen.classList.remove('is-view-settling'),520);
  }));
 }
 function renderCalendarContent(settleTransition=false){const screen=$('calendarScreen');if(!settleTransition)screen.classList.remove('is-view-settling');screen.classList.toggle('panel-open',view!=='all');$('monthTitle').textContent=fmtDate(cursor,{month:'long',year:'numeric'});const sc=$('calendarScroller'),grid=$('dateGrid');sc.className='calendar-scroller '+(view==='week'?'week-mode':view==='month'?'month-mode':'all-mode');sc.classList.remove('view-enter');void sc.offsetWidth;sc.classList.add('view-enter');if(view==='all'){grid.style.display='block';grid.innerHTML='';const start=new Date(cursor.getFullYear(),cursor.getMonth()-6,1,12);for(let i=0;i<13;i++)grid.insertAdjacentHTML('beforeend',makeMonth(new Date(start.getFullYear(),start.getMonth()+i,1,12)));bindDateCells(grid);requestAnimationFrame(()=>{const target=grid.querySelector('[data-month="'+monthKey(cursor)+'"]');if(target){const sr=sc.getBoundingClientRect(),tr=target.getBoundingClientRect();sc.scrollTop+=tr.top-sr.top-28;}});}else{grid.style.display='grid';const first=monthStart(cursor);let start;if(view==='week'){start=new Date(selected);start=addDays(start,-((start.getDay()+6)%7))}else start=addDays(first,-((first.getDay()+6)%7));const count=view==='week'?7:42;let out='';for(let i=0;i<count;i++){const d=addDays(start,i),inside=d.getMonth()===cursor.getMonth(),items=onDay(d);out+='<button class="date-cell '+(!inside&&view!=='week'?'outside ':'')+(sameDay(d,today)?'today ':'')+(sameDay(d,selected)?'selected':'')+'" data-date="'+dateKey(d)+'" aria-label="'+esc(fmtDate(d))+(items.length?', '+items.length+' events':'')+'"><span>'+d.getDate()+'</span><span class="dots">'+items.slice(0,3).map(()=>'<i></i>').join('')+'</span></button>'}grid.innerHTML=out;bindDateCells(grid)}renderPanel()}
@@ -323,20 +348,12 @@ function settleHandleDrag(target){
  if(!handleDragging)return;
  const changed=target!==handleStartView;
  if(!changed){clearHandleDrag();return}
- // Preserve the pointer-driven preview until the target layout is rendered.
- // Then release the preview under active CSS transitions, rather than clearing
- // its layout variables first (which caused the snap).
+ // Leave the live drag layout intact; renderCalendar captures it and glides
+ // the calendar and panel into their final geometry without opacity effects.
  clearTimeout(viewSettleTimer);
- calendarScreen.classList.add('is-view-settling');
  clearHandleDrag(true);
- calendarScreen.classList.remove('is-view-dragging','drag-toward-open','drag-toward-closed');
  view=target;
  renderCalendar(true);
- requestAnimationFrame(()=>{
-  ['--drag-progress','--drag-panel-size','--drag-close-size','--drag-scroller-max','--drag-scroller-scale','--drag-scroller-height'].forEach(k=>calendarScreen.style.removeProperty(k));
-  selectedPanel.style.removeProperty('--panel-drag-y');
- });
- viewSettleTimer=setTimeout(()=>calendarScreen.classList.remove('is-view-settling'),520);
 }
 function finishHandleDrag(e){
  if(!handleDragging)return;
