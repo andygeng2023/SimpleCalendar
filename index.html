@@ -40,7 +40,7 @@
 .search-event-date{font-size:11px;color:#536654;font-weight:750;margin:7px 2px 3px}
 .screen.active{animation:screenEnter .24s cubic-bezier(.2,.75,.25,1) both}
 @keyframes screenEnter{from{opacity:.55;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
-.calendar-scroller.view-enter{animation:viewEnter .34s cubic-bezier(.2,.75,.25,1) both}#calendarScreen .panel-head,#calendarScreen .panel-actions,.month-controls button{transition:opacity .22s ease,transform .28s cubic-bezier(.2,.75,.25,1)}.date-cell{transition:background-color .2s ease,color .2s ease,transform .24s cubic-bezier(.2,.75,.25,1)}.date-cell:active{transform:scale(.91)}
+.calendar-scroller.view-enter{animation:none!important}#calendarScreen .panel-head,#calendarScreen .panel-actions,.month-controls button{transition:opacity .22s ease,transform .28s cubic-bezier(.2,.75,.25,1)}.date-cell{transition:background-color .2s ease,color .2s ease,transform .24s cubic-bezier(.2,.75,.25,1)}.date-cell:active{transform:scale(.91)}
 #calendarScreen .search-wrap:has(+ #searchResults:not(:empty)){margin-bottom:3px}
 @media(max-width:430px){.panel-text-btn{font-size:12px;padding:0 9px;min-height:36px}.panel-head h2{font-size:17px}.search-results{max-height:32%}.search-event-list .event{padding:6px 7px}}
 @media(prefers-reduced-motion:reduce){.screen.active,.calendar-scroller.view-enter,.timeline-month{animation:none!important;transition:none!important}}
