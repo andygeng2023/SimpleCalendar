@@ -9,56 +9,287 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./icon.svg"><meta name="description" content="A calm, simple calendar for your days.">
-<title>Daymark — Calendar</title>
+<title>Calex</title>
 <link rel="stylesheet" href="styles.css">
 </head>
-<body><div class="app">
-<header class="topbar"><div class="brand">day<span>mark</span></div><div class="top-actions" aria-hidden="true"></div></header>
-<main>
-<section id="homeScreen" class="screen active"><div class="day-hero"><div class="weekday" id="heroWeekday">Monday</div><div class="long-date" id="heroDate"></div></div><h2 class="section-heading">Today</h2><div id="todayEvents"></div></section>
-<section id="calendarScreen" class="screen"><div class="search-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><input id="searchInput" class="search" placeholder="Search dates or events…" autocomplete="off" aria-label="Search dates or events"></div><div id="searchResults" class="search-results"></div><div class="calendar-toolbar"><div class="month-title" id="monthTitle">October 2026</div><div class="month-controls"><button id="prevYear" aria-label="Previous year" title="Previous year"><svg viewBox="0 0 24 24"><path d="m11 5-7 7 7 7M20 5l-7 7 7 7"/></svg></button><button id="prevMonth" aria-label="Previous month" title="Previous month"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><button id="nextMonth" aria-label="Next month" title="Next month"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button><button id="nextYear" aria-label="Next year" title="Next year"><svg viewBox="0 0 24 24"><path d="m13 5 7 7-7 7M4 5l7 7-7 7"/></svg></button></div></div><div id="calendarScroller" class="calendar-scroller"><div class="weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div><div id="dateGrid" class="date-grid"></div></div><section id="selectedPanel" class="selected-panel"><div class="panel-handle"><span class="handle-grip" aria-hidden="true"></span></div><div class="panel-head"><h2 id="panelDate">Selected day</h2><div class="panel-actions"><button class="panel-text-btn" id="panelQuick" aria-label="Quick event">Quick event</button><button class="panel-text-btn primary-action" id="panelAdd" aria-label="Add event">Add event</button></div></div><div id="panelEvents"></div></section></section>
-<section id="settingsScreen" class="screen" aria-label="Settings">
-<h1 class="settings-title">Settings</h1>
-<button class="profile-card" id="profileEdit" type="button" aria-label="Edit profile">
-<span class="profile-avatar" id="profileAvatar" aria-hidden="true">A</span>
-<span class="profile-copy"><span class="profile-name" id="profileName">Your name</span><span class="profile-location" id="profileLocation">Add your location</span></span>
-<span class="profile-edit">Edit</span>
-</button>
-<div class="settings-group">
-<div class="settings-group-title">Preferences</div>
-<button class="settings-row" id="timezoneToggle" type="button" aria-expanded="false" aria-controls="timezoneDetail">
-<span class="settings-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></span>
-<span class="settings-row-copy"><span class="settings-row-title">Time zone</span><span class="settings-row-sub" id="timezoneSummary">Automatic · device time zone</span></span><span class="settings-chevron" aria-hidden="true">›</span>
-</button>
-<div class="settings-detail" id="timezoneDetail" hidden>
-<div class="settings-label">Time zone</div><div class="timezone-mode" role="group" aria-label="Time zone mode"><button type="button" id="timezoneAuto" class="timezone-mode-button" aria-pressed="true">Automatic</button><button type="button" id="timezoneManual" class="timezone-mode-button" aria-pressed="false">Choose time zone</button></div>
-<div id="timezoneSearchWrap" hidden><label for="timezoneSearch">Search by city or region</label><input id="timezoneSearch" type="search" placeholder="Try London, Tokyo, or UTC…" autocomplete="off"><div id="timezoneResults" class="timezone-results" role="listbox" aria-label="Matching time zones"></div></div>
-<p class="settings-help" id="timezoneHelp">Automatic mode follows the time zone configured on this device.</p>
-<div class="settings-inline"><button type="button" class="save-settings" id="saveTimezone">Save time zone</button></div>
+
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">Calex</div>
+    <div class="top-actions" aria-hidden="true"></div>
+  </header>
+  
+  <main>
+  <section id="homeScreen" class="screen active">
+    <div class="day-hero">
+      <div class="weekday" id="heroWeekday">Monday</div>
+      <div class="long-date" id="heroDate"></div></div><h2 class="section-heading">Today</h2>
+    <div id="todayEvents"></div></section>
+  
+  <section id="calendarScreen" class="screen">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="7"/>
+        <path d="m16 16 4 4"/>
+      </svg>
+      <input id="searchInput" class="search" placeholder="Search dates or events…" autocomplete="off" aria-label="Search dates or events">
+    </div>
+    <div id="searchResults" class="search-results"></div>
+    <div class="calendar-toolbar">
+      <div class="month-title" id="monthTitle">October 2026</div>
+      <div class="month-controls">
+        <button id="prevYear" aria-label="Previous year" title="Previous year">
+          <svg viewBox="0 0 24 24">
+            <path d="m11 5-7 7 7 7M20 5l-7 7 7 7"/>
+          </svg>
+        </button>
+        <button id="prevMonth" aria-label="Previous month" title="Previous month">
+          <svg viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+        </button>
+        <button id="nextMonth" aria-label="Next month" title="Next month">
+          <svg viewBox="0 0 24 24">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
+        </button>
+        <button id="nextYear" aria-label="Next year" title="Next year">
+          <svg viewBox="0 0 24 24">
+            <path d="m13 5 7 7-7 7M4 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div id="calendarScroller" class="calendar-scroller">
+      <div class="weekdays">
+        <span>Mon</span>
+        <span>Tue</span>
+        <span>Wed</span>
+        <span>Thu</span>
+        <span>Fri</span>
+        <span>Sat</span>
+        <span>Sun</span>
+      </div>
+      <div id="dateGrid" class="date-grid"></div>
+    </div>
+    
+    <section id="selectedPanel" class="selected-panel">
+      <div class="panel-handle">
+        <span class="handle-grip" aria-hidden="true"></span>
+      </div>
+      <div class="panel-head">
+        <h2 id="panelDate">Selected day</h2>
+        <div class="panel-actions">
+          <button class="panel-text-btn" id="panelQuick" aria-label="Quick event">Quick event</button>
+          <button class="panel-text-btn primary-action" id="panelAdd" aria-label="Add event">Add event</button>
+        </div>
+      </div>
+      <div id="panelEvents">
+      </div>
+    </section>
+  </section>
+  
+  <section id="settingsScreen" class="screen" aria-label="Settings">
+    <h1 class="settings-title">Settings</h1>
+    <button class="profile-card" id="profileEdit" type="button" aria-label="Edit profile">
+      <span class="profile-avatar" id="profileAvatar" aria-hidden="true">A</span>
+      <span class="profile-copy">
+        <span class="profile-name" id="profileName">Your name</span>
+        <span class="profile-location" id="profileLocation">Add your location</span>
+      </span>
+      <span class="profile-edit">Edit</span>
+    </button>
+    
+    <div class="settings-group">
+      <div class="settings-group-title">Preferences</div>
+        <button class="settings-row" id="timezoneToggle" type="button" aria-expanded="false" aria-controls="timezoneDetail">
+          <span class="settings-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>
+            </svg>
+          </span>
+          <span class="settings-row-copy">
+            <span class="settings-row-title">Time zone</span>
+            <span class="settings-row-sub" id="timezoneSummary">Automatic · device time zone</span>
+          </span>
+          <span class="settings-chevron" aria-hidden="true">›</span>
+        </button>
+      <div class="settings-detail" id="timezoneDetail" hidden>
+        <div class="settings-label">Time zone</div>
+          <div class="timezone-mode" role="group" aria-label="Time zone mode">
+            <button type="button" id="timezoneAuto" class="timezone-mode-button" aria-pressed="true">Automatic</button>
+            <button type="button" id="timezoneManual" class="timezone-mode-button" aria-pressed="false">Choose time zone</button>
+          </div>
+        <div id="timezoneSearchWrap" hidden>
+          <label for="timezoneSearch">Search by city or region</label>
+          <input id="timezoneSearch" type="search" placeholder="Try London, Tokyo, or UTC…" autocomplete="off">
+          <div id="timezoneResults" class="timezone-results" role="listbox" aria-label="Matching time zones"></div>
+        </div>
+        <p class="settings-help" id="timezoneHelp">Automatic mode follows the time zone configured on this device.</p>
+        <div class="settings-inline">
+          <button type="button" class="save-settings" id="saveTimezone">Save time zone</button>
+        </div>
+      </div>
+      <button class="settings-row" id="accountToggle" type="button" aria-expanded="false" aria-controls="accountDetail">
+        <span class="settings-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 21a8 8 0 0 1 16 0"/>
+          </svg>
+        </span>
+        <span class="settings-row-copy">
+          <span class="settings-row-title">Account & profile</span>
+          <span class="settings-row-sub">Your display name and location</span>
+        </span>
+        <span class="settings-chevron" aria-hidden="true">›</span>
+      </button>
+      <div class="settings-detail" id="accountDetail" hidden>
+        <label for="settingsName">Display name</label>
+        <input id="settingsName" maxlength="80" placeholder="Your name">
+        <label for="settingsLocation">Location</label>
+        <input id="settingsLocation" maxlength="120" placeholder="City or region">
+        <p class="settings-help">This profile is saved on this device. Calex does not currently have sign-in or a synced account.</p>
+        <div class="settings-inline">
+          <button type="button" class="save-settings" id="saveProfile">Save profile</button>
+        </div>
+      </div>
+      <button class="settings-row" id="appearanceToggle" type="button" role="switch" aria-checked="false">
+        <span class="settings-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M20.5 14A8.5 8.5 0 0 1 10 3.5 8.5 8.5 0 1 0 20.5 14Z"/>
+          </svg>
+        </span>
+        <span class="settings-row-copy">
+          <span class="settings-row-title">Dark appearance</span>
+          <span class="settings-row-sub">Switch between light and dark themes</span>
+        </span>
+        <span class="settings-switch" id="appearanceSwitch" aria-hidden="true">
+          <span></span>
+        </span>
+      </button>
+      <button class="settings-row" id="exportCalendar" type="button">
+        <span class="settings-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/>
+          </svg>
+        </span>
+        <span class="settings-row-copy">
+          <span class="settings-row-title">Export events</span>
+          <span class="settings-row-sub">Download a calendar file (.ics)</span>
+        </span>
+        <span class="settings-chevron" aria-hidden="true">›</span>
+      </button>
+    </div>
+    <p class="settings-footnote">Your calendar and these preferences are stored locally in this browser. Account sign-in and cloud synchronisation are not configured.</p>
+  </section>
+  
+  </main>
+
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button class="nav-btn active" data-screen="home" aria-label="Home">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3.5 10.5 12 3.7l8.5 6.8"/>
+        <path d="M5.5 9.5V20h5v-6h3v6h5V9.5"/>
+      </svg>
+      <span>Home</span>
+    </button>
+    <button class="nav-btn" data-screen="calendar" aria-label="Calendar">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="3.5" y="5.5" width="17" height="16" rx="2.2"/>
+        <path d="M7.5 3.5v4M16.5 3.5v4M3.5 10h17"/>
+        <path d="M7.5 13.5h.01M12 13.5h.01M16.5 13.5h.01M7.5 17h.01M12 17h.01"/>
+      </svg>
+      <span>Calendar</span>
+    </button>
+    <button class="nav-btn" data-screen="settings" aria-label="Settings">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="3.2"/>
+        <path d="M19.2 13.8a7.5 7.5 0 0 0 0-3.6l1.3-1-1.8-3.1-1.6.6a7.4 7.4 0 0 0-3.1-1.8L13.7 3h-3.4l-.3 1.9a7.4 7.4 0 0 0-3.1 1.8l-1.6-.6-1.8 3.1 1.3 1a7.5 7.5 0 0 0 0 3.6l-1.3 1 1.8 3.1 1.6-.6a7.4 7.4 0 0 0 3.1 1.8l.3 1.9h3.4l.3-1.9a7.4 7.4 0 0 0 3.1-1.8l1.6.6 1.8-3.1z"/>
+      </svg>
+      <span>Settings</span>
+    </button>
+  </nav>
+
 </div>
-<button class="settings-row" id="accountToggle" type="button" aria-expanded="false" aria-controls="accountDetail">
-<span class="settings-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
-<span class="settings-row-copy"><span class="settings-row-title">Account & profile</span><span class="settings-row-sub">Your display name and location</span></span><span class="settings-chevron" aria-hidden="true">›</span>
-</button>
-<div class="settings-detail" id="accountDetail" hidden>
-<label for="settingsName">Display name</label><input id="settingsName" maxlength="80" placeholder="Your name">
-<label for="settingsLocation">Location</label><input id="settingsLocation" maxlength="120" placeholder="City or region">
-<p class="settings-help">This profile is saved on this device. Daymark does not currently have sign-in or a synced account.</p>
-<div class="settings-inline"><button type="button" class="save-settings" id="saveProfile">Save profile</button></div>
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-top">
+      <h2 id="modalTitle">New event</h2>
+      <button class="close-btn" id="closeModal" aria-label="Close">
+        <svg viewBox="0 0 24 24">
+          <path d="m6 6 12 12M18 6 6 18"/>
+        </svg>
+      </button>
+    </div>
+    <div id="quickForm">
+      <div class="field">
+        <label for="quickText">Describe your event</label>
+        <textarea id="quickText" placeholder="e.g. Dentist tomorrow at 10:07 to 11am, repeat weekly"></textarea>
+      </div>
+      <p class="nlp-help">Try “Team meeting tomorrow 10:07 to 20:00”, “Gym every Monday at 6pm”, or “Lunch on 14 June at noon”. We’ll interpret common dates, times and repeats.</p>
+      <div id="quickPreview" class="nlp-help"></div>
+      <button class="primary icon-only" id="quickSave" aria-label="Create event" title="Create event">
+        <svg viewBox="0 0 24 24">
+          <path d="m5 12 4 4L19 6"/>
+        </svg>
+      </button>
+    </div>
+    <form id="eventForm" hidden>
+      <div class="form-grid">
+        <div class="field full title-field">
+          <label for="eventTitle">Event name *</label>
+          <input id="eventTitle" required placeholder="What is this event?" aria-label="Event title"></div>
+        <div class="field full description-field">
+          <label for="eventDescription">Description</label>
+          <textarea id="eventDescription" placeholder="Add details about this event…" aria-label="Event description"></textarea>
+        </div>
+        <div class="field">
+          <label for="eventDate">Date *</label>
+          <input id="eventDate" type="date" required>
+        </div>
+        <div class="field">
+          <label for="eventLocation">Location</label>
+          <input id="eventLocation" placeholder="Add a place">
+        </div>
+        <div class="field">
+          <label for="eventStart">Start time</label>
+          <input id="eventStart" type="time">
+        </div><div class="field">
+          <label for="eventEnd">End time</label>
+          <input id="eventEnd" type="time">
+        </div>
+        <div class="field">
+          <label for="eventRepeat">Repeat</label>
+          <select id="eventRepeat">
+            <option value="none">Never</option>
+            <option value="daily">Every day</option>
+            <option value="weekly">Every week</option>
+            <option value="monthly">Every month</option>
+            <option value="yearly">Every year</option>
+          </select></div><div class="field">
+            <label for="eventPeople">People</label>
+            <input id="eventPeople" placeholder="Names, separated by commas">
+          </div>
+        <div class="field full">
+          <label for="eventNotes">Notes</label>
+          <textarea id="eventNotes" placeholder="Anything else to remember"></textarea>
+        </div>
+      </div>
+      <button class="primary icon-only" type="submit" aria-label="Save event" title="Save event">
+        <svg viewBox="0 0 24 24">
+          <path d="m5 12 4 4L19 6"/>
+        </svg>
+      </button>
+    </form>
+  </div>
 </div>
-<button class="settings-row" id="appearanceToggle" type="button" role="switch" aria-checked="false">
-<span class="settings-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 14A8.5 8.5 0 0 1 10 3.5 8.5 8.5 0 1 0 20.5 14Z"/></svg></span>
-<span class="settings-row-copy"><span class="settings-row-title">Dark appearance</span><span class="settings-row-sub">Switch between light and dark themes</span></span><span class="settings-switch" id="appearanceSwitch" aria-hidden="true"><span></span></span>
-</button>
-<button class="settings-row" id="exportCalendar" type="button">
-<span class="settings-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></svg></span>
-<span class="settings-row-copy"><span class="settings-row-title">Export events</span><span class="settings-row-sub">Download a calendar file (.ics)</span></span><span class="settings-chevron" aria-hidden="true">›</span>
-</button>
-</div>
-<p class="settings-footnote">Your calendar and these preferences are stored locally in this browser. Account sign-in and cloud synchronisation are not configured.</p>
-</section>
-</main>
-<nav class="bottom-nav" aria-label="Main navigation"><button class="nav-btn active" data-screen="home" aria-label="Home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.5 12 3.7l8.5 6.8"/><path d="M5.5 9.5V20h5v-6h3v6h5V9.5"/></svg><span>Home</span></button><button class="nav-btn" data-screen="calendar" aria-label="Calendar"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="16" rx="2.2"/><path d="M7.5 3.5v4M16.5 3.5v4M3.5 10h17"/><path d="M7.5 13.5h.01M12 13.5h.01M16.5 13.5h.01M7.5 17h.01M12 17h.01"/></svg><span>Calendar</span></button><button class="nav-btn" data-screen="settings" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.2 13.8a7.5 7.5 0 0 0 0-3.6l1.3-1-1.8-3.1-1.6.6a7.4 7.4 0 0 0-3.1-1.8L13.7 3h-3.4l-.3 1.9a7.4 7.4 0 0 0-3.1 1.8l-1.6-.6-1.8 3.1 1.3 1a7.5 7.5 0 0 0 0 3.6l-1.3 1 1.8 3.1 1.6-.6a7.4 7.4 0 0 0 3.1 1.8l.3 1.9h3.4l.3-1.9a7.4 7.4 0 0 0 3.1-1.8l1.6.6 1.8-3.1z"/></svg><span>Settings</span></button></nav>
-</div>
-<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><div class="modal-top"><h2 id="modalTitle">New event</h2><button class="close-btn" id="closeModal" aria-label="Close"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div id="quickForm"><div class="field"><label for="quickText">Describe your event</label><textarea id="quickText" placeholder="e.g. Dentist tomorrow at 10:07 to 11am, repeat weekly"></textarea></div><p class="nlp-help">Try “Team meeting tomorrow 10:07 to 20:00”, “Gym every Monday at 6pm”, or “Lunch on 14 June at noon”. We’ll interpret common dates, times and repeats.</p><div id="quickPreview" class="nlp-help"></div><button class="primary icon-only" id="quickSave" aria-label="Create event" title="Create event"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></button></div><form id="eventForm" hidden><div class="form-grid"><div class="field full title-field"><label for="eventTitle">Event name *</label><input id="eventTitle" required placeholder="What is this event?" aria-label="Event title"></div><div class="field full description-field"><label for="eventDescription">Description</label><textarea id="eventDescription" placeholder="Add details about this event…" aria-label="Event description"></textarea></div><div class="field"><label for="eventDate">Date *</label><input id="eventDate" type="date" required></div><div class="field"><label for="eventLocation">Location</label><input id="eventLocation" placeholder="Add a place"></div><div class="field"><label for="eventStart">Start time</label><input id="eventStart" type="time"></div><div class="field"><label for="eventEnd">End time</label><input id="eventEnd" type="time"></div><div class="field"><label for="eventRepeat">Repeat</label><select id="eventRepeat"><option value="none">Never</option><option value="daily">Every day</option><option value="weekly">Every week</option><option value="monthly">Every month</option><option value="yearly">Every year</option></select></div><div class="field"><label for="eventPeople">People</label><input id="eventPeople" placeholder="Names, separated by commas"></div><div class="field full"><label for="eventNotes">Notes</label><textarea id="eventNotes" placeholder="Anything else to remember"></textarea></div></div><button class="primary icon-only" type="submit" aria-label="Save event" title="Save event"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></button></form></div></div><div class="toast" id="toast" role="status"></div>
-<script src="app.js"></script></body></html>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="app.js"></script>
+
+</body>
+
+</html>
