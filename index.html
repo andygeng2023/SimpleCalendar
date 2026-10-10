@@ -1,16 +1,17 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" href="./icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="./icon.svg"><meta name="description" content="A calm, simple calendar for your days.">
-<title>Calex</title>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon.svg"><meta name="description" content="A calm, simple calendar for your days.">
+  <title>Calex</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -236,14 +237,13 @@
         </svg>
       </button>
     </div>
+    
     <form id="eventForm" hidden>
       <div class="form-grid">
         <div class="field full title-field">
-          <label for="eventTitle">Event name *</label>
-          <input id="eventTitle" required placeholder="What is this event?" aria-label="Event title"></div>
+          <input id="eventTitle" required placeholder="Event name" aria-label="Event title"></div>
         <div class="field full description-field">
-          <label for="eventDescription">Description</label>
-          <textarea id="eventDescription" placeholder="Add details about this event…" aria-label="Event description"></textarea>
+          <textarea id="eventDescription" placeholder="A short description..." aria-label="Event description"></textarea>
         </div>
         <div class="field">
           <label for="eventDate">Date *</label>
@@ -266,12 +266,15 @@
             <option value="none">Never</option>
             <option value="daily">Every day</option>
             <option value="weekly">Every week</option>
+            <option value="fortnightly">Every fortnight</option>
             <option value="monthly">Every month</option>
             <option value="yearly">Every year</option>
-          </select></div><div class="field">
-            <label for="eventPeople">People</label>
-            <input id="eventPeople" placeholder="Names, separated by commas">
-          </div>
+          </select>
+        </div>
+        <div class="field">
+          <label for="eventPeople">People</label>
+          <input id="eventPeople" placeholder="Names, separated by commas">
+        </div>
         <div class="field full">
           <label for="eventNotes">Notes</label>
           <textarea id="eventNotes" placeholder="Anything else to remember"></textarea>
