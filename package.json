@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "format": "prettier --write \"**/*.{html,css,js,json,md,svg,yml,yaml}\"",
-    "format:check": "prettier --check \"**/*.{html,css,js,json,md,svg,yml,yaml}\"",
+    "format": "prettier --write \"**/*.{html,css,js,json,md,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{html,css,js,json,md,yml,yaml}\"",
     "test": "playwright test"
   },
   "devDependencies": {
