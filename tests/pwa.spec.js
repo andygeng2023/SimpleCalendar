@@ -13,6 +13,7 @@ test('calendar loads and core navigation works', async ({ page }) => {
   await expect(page.locator('#monthTitle')).not.toBeEmpty();
   await expect(page.locator('[data-date]').first()).toBeVisible();
 
+  await page.locator('[data-date]').first().click();
   await page.locator('#panelAdd').click();
   await expect(page.locator('#eventForm')).toBeVisible();
   await page.locator('#eventTitle').fill('Playwright smoke test');
