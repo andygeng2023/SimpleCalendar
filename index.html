@@ -119,6 +119,59 @@
 .app.settings-dark .profile-card{background:linear-gradient(135deg,#223628,#1d2a20)}.app.settings-dark .settings-icon,.app.settings-dark .profile-avatar{background:#304b36;color:#c7ebce}.app.settings-dark .settings-row{border-color:#344337}.app.settings-dark .settings-detail{border-color:#344337}.app.settings-dark .settings-detail input,.app.settings-dark .settings-detail select{border-color:#425345}
 @media(max-width:430px){#settingsScreen{padding-left:20px;padding-right:20px}.profile-card{padding:15px}.settings-detail{padding-left:16px}}
 
+
+/* Settings redesign: flat rows, searchable timezone results, complete theme tokens */
+#settingsScreen{gap:0;padding-top:24px;padding-bottom:32px;overflow-y:auto}
+.settings-title{font-size:30px;letter-spacing:-1px;margin:0 0 26px;font-weight:760}
+.profile-card{border:0;border-radius:0;background:transparent;padding:0 0 24px;margin:0 0 20px;border-bottom:1px solid var(--line);gap:16px}
+.profile-avatar{width:64px;height:64px;flex-basis:64px;border-radius:50%;background:var(--green-pale);color:var(--green-dark)}
+.profile-name{font-size:18px;font-weight:720}.profile-location{font-size:14px;margin-top:5px}
+.profile-edit{font-size:13px;font-weight:700;color:var(--green)}
+.settings-group{border:0;border-radius:0;background:transparent;overflow:visible}
+.settings-group-title{padding:0 0 8px;font-size:11px;letter-spacing:1.2px;color:var(--muted)}
+.settings-row{background:transparent;border:0;border-bottom:1px solid var(--line);padding:16px 0;min-height:70px;gap:14px}
+.settings-row:first-of-type{border-top:0}
+.settings-icon{width:24px;height:24px;flex-basis:24px;border-radius:0;background:transparent;color:var(--muted)}
+.settings-icon svg{width:21px;height:21px}
+.settings-row-title{font-size:15px;font-weight:650}
+.settings-row-sub{font-size:13px;margin-top:4px;line-height:1.45}
+.settings-chevron{font-size:24px;font-weight:300}
+.settings-detail{padding:12px 0 20px 38px;background:transparent;border:0;border-bottom:1px solid var(--line)}
+.settings-detail label,.settings-label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin:12px 0 7px}
+.settings-detail input{width:100%;min-height:46px;border:1px solid var(--line);border-radius:9px;background:var(--paper);color:var(--ink);padding:11px 12px}
+.settings-detail .settings-help{font-size:12px;line-height:1.55;margin:12px 0 0}
+.settings-inline{margin-top:14px}
+.settings-inline button{border:0;border-radius:9px;padding:11px 15px;background:var(--green-pale);color:var(--green-dark);font-weight:700}
+.settings-inline .save-settings{background:var(--green);color:white}
+.settings-switch{background:#b9c2ba}
+.settings-footnote{padding:20px 0 0;font-size:12px;line-height:1.6}
+.timezone-mode{display:flex;gap:0;border-bottom:1px solid var(--line);margin:8px 0 14px}
+.timezone-mode-button{flex:1;border:0;border-bottom:2px solid transparent;padding:12px 8px;background:transparent;color:var(--muted);font-size:13px;font-weight:650}
+.timezone-mode-button[aria-pressed="true"]{color:var(--green);border-bottom-color:var(--green)}
+#timezoneSearch{margin-bottom:8px}
+.timezone-results{display:flex;flex-direction:column;max-height:250px;overflow:auto;border-top:1px solid var(--line)}
+.timezone-result{display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;width:100%;padding:12px 4px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink)}
+.timezone-result.selected{color:var(--green);font-weight:700}
+.timezone-result-name{font-size:14px}.timezone-result-region{font-size:11px;color:var(--muted);text-align:right}
+.timezone-no-results{font-size:13px;color:var(--muted);padding:12px 0}
+.app.settings-dark{--ink:#e8eee9;--muted:#a2afa5;--line:#303b33;--paper:#151b17;--bg:#101512;--green:#9bd4a5;--green-dark:#b7e5be;--green-pale:#24382a;background:var(--paper);color:var(--ink);box-shadow:none}
+.app.settings-dark .topbar,.app.settings-dark .screen,.app.settings-dark #settingsScreen,.app.settings-dark .settings-group,.app.settings-dark .settings-row,.app.settings-dark .settings-detail,.app.settings-dark .profile-card,.app.settings-dark .selected-panel{background:transparent;color:var(--ink)}
+.app.settings-dark .bottom-nav{background:#151b17ed;border-color:var(--line)}
+.app.settings-dark .icon-btn,.app.settings-dark .month-controls button,.app.settings-dark .date-cell,.app.settings-dark .search,.app.settings-dark .small-btn,.app.settings-dark .panel-text-btn,.app.settings-dark .secondary{background:#1b241e;color:var(--ink);border-color:var(--line)}
+.app.settings-dark .weekdays{background:#151b17;border-color:var(--line)}
+.app.settings-dark .date-cell.selected,.app.settings-dark .panel-text-btn.primary-action,.app.settings-dark .primary,.app.settings-dark .settings-inline .save-settings{background:#39774a;color:#fff;border-color:#39774a}
+.app.settings-dark .date-cell.today:not(.selected){box-shadow:inset 0 0 0 1.5px #8ac797}
+.app.settings-dark .tag{background:#24382a;color:#b7e5be}
+.app.settings-dark .settings-icon,.app.settings-dark .profile-avatar{background:transparent;color:#a8d9b0}
+.app.settings-dark .settings-detail input,.app.settings-dark .field input,.app.settings-dark .field textarea,.app.settings-dark .field select,.app.settings-dark .modal{background:#1b241e;color:var(--ink);border-color:var(--line)}
+.app.settings-dark .modal-backdrop{background:#000a}
+.app.settings-dark .close-btn{background:#263229;color:var(--ink)}
+.app.settings-dark .search-results .event,.app.settings-dark .search-event-list .event,.app.settings-dark .date-suggestion{background:#1b241e;color:var(--ink);border-color:var(--line)}
+.app.settings-dark .settings-row{border-color:var(--line)}
+.app.settings-dark .handle-grip{background:#536456}
+.app.settings-dark .empty{color:var(--muted)}
+@media(max-width:430px){#settingsScreen{padding-left:24px;padding-right:24px}.settings-detail{padding-left:0}.profile-card{padding-bottom:20px}}
+
 </style>
 </head>
 <body><div class="app">
@@ -140,8 +193,8 @@
 <span class="settings-row-copy"><span class="settings-row-title">Time zone</span><span class="settings-row-sub" id="timezoneSummary">Automatic · device time zone</span></span><span class="settings-chevron" aria-hidden="true">›</span>
 </button>
 <div class="settings-detail" id="timezoneDetail" hidden>
-<label for="timezoneMode">Time zone mode</label><select id="timezoneMode"><option value="auto">Automatic (use this device)</option><option value="manual">Choose a time zone</option></select>
-<div id="timezoneSearchWrap" hidden><label for="timezoneSearch">Search time zones</label><input id="timezoneSearch" type="search" placeholder="Search city or region…" autocomplete="off"><label for="timezoneSelect">Available time zones</label><select id="timezoneSelect" size="5" aria-label="Available time zones"></select></div>
+<div class="settings-label">Time zone</div><div class="timezone-mode" role="group" aria-label="Time zone mode"><button type="button" id="timezoneAuto" class="timezone-mode-button" aria-pressed="true">Automatic</button><button type="button" id="timezoneManual" class="timezone-mode-button" aria-pressed="false">Choose time zone</button></div>
+<div id="timezoneSearchWrap" hidden><label for="timezoneSearch">Search by city or region</label><input id="timezoneSearch" type="search" placeholder="Try London, Tokyo, or UTC…" autocomplete="off"><div id="timezoneResults" class="timezone-results" role="listbox" aria-label="Matching time zones"></div></div>
 <p class="settings-help" id="timezoneHelp">Automatic mode follows the time zone configured on this device.</p>
 <div class="settings-inline"><button type="button" class="save-settings" id="saveTimezone">Save time zone</button></div>
 </div>
@@ -446,15 +499,16 @@ function timezoneNames(){try{if(typeof Intl.supportedValuesOf==='function')retur
 let allTimezones=timezoneNames();
 function renderProfile(){const name=appSettings.name.trim()||'Your name',location=appSettings.location.trim()||'Add your location';$('profileName').textContent=name;$('profileLocation').textContent=location;$('profileAvatar').textContent=appSettings.name.trim()?appSettings.name.trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase():'A';$('settingsName').value=appSettings.name;$('settingsLocation').value=appSettings.location}
 function currentTimezone(){return appSettings.timezoneMode==='manual'&&allTimezones.includes(appSettings.timezone)?appSettings.timezone:deviceTimezone()}
-function renderTimezone(){const tz=currentTimezone();$('timezoneSummary').textContent=appSettings.timezoneMode==='auto'?'Automatic · '+deviceTimezone():tz;$('timezoneMode').value=appSettings.timezoneMode;$('timezoneSearchWrap').hidden=appSettings.timezoneMode!=='manual';$('timezoneHelp').textContent=appSettings.timezoneMode==='auto'?'Automatic mode follows the time zone configured on this device.':'Selected time zone: '+tz+'. Existing event dates and times are not converted.';populateTimezoneOptions($('timezoneSearch').value||tz)}
-function populateTimezoneOptions(query=''){const select=$('timezoneSelect'),q=query.toLowerCase();const filtered=allTimezones.filter(z=>z.toLowerCase().includes(q));select.innerHTML=filtered.map(z=>'<option value="'+esc(z)+'">'+esc(z.replace(/_/g,' '))+'</option>').join('');if(filtered.includes(appSettings.timezone))select.value=appSettings.timezone;else if(filtered.includes(deviceTimezone()))select.value=deviceTimezone();else if(filtered.length)select.selectedIndex=0}
+function renderTimezone(){const tz=currentTimezone();$('timezoneSummary').textContent=appSettings.timezoneMode==='auto'?'Automatic · '+deviceTimezone():tz;$('timezoneAuto').setAttribute('aria-pressed',String(appSettings.timezoneMode==='auto'));$('timezoneManual').setAttribute('aria-pressed',String(appSettings.timezoneMode==='manual'));$('timezoneSearchWrap').hidden=appSettings.timezoneMode!=='manual';$('timezoneHelp').textContent=appSettings.timezoneMode==='auto'?'Follows the time zone configured on this device.':'Selected: '+tz+'. Existing event dates and times are not converted.';populateTimezoneOptions($('timezoneSearch').value||'')}
+function populateTimezoneOptions(query=''){const root=$('timezoneResults'),q=query.trim().toLowerCase();const filtered=allTimezones.filter(z=>z.toLowerCase().replace(/_/g,' ').includes(q)).sort((a,b)=>{const ap=a===appSettings.timezone?-1:0,bp=b===appSettings.timezone?-1:0;return ap-bp||a.localeCompare(b)}).slice(0,80);root.innerHTML='';if(!filtered.length){root.innerHTML='<p class="timezone-no-results">No matching time zones. Try a city or region name.</p>';return}filtered.forEach(z=>{const b=document.createElement('button');b.type='button';b.className='timezone-result'+(z===appSettings.timezone?' selected':'');b.setAttribute('role','option');b.setAttribute('aria-selected',String(z===appSettings.timezone));const name=z.split('/').pop().replace(/_/g,' '),region=z.includes('/')?z.slice(0,z.lastIndexOf('/')).replace(/_/g,' '):'Global';b.innerHTML='<span class="timezone-result-name">'+esc(name)+'</span><span class="timezone-result-region">'+esc(region)+'</span>';b.addEventListener('click',()=>{appSettings.timezone=z;populateTimezoneOptions($('timezoneSearch').value);$('timezoneHelp').textContent='Selected: '+z+'. Save to apply this preference.'});root.appendChild(b)})}
 function openSettingsDetail(which){const ids={timezone:'timezoneDetail',account:'accountDetail'};Object.entries(ids).forEach(([key,id])=>{const open=key===which&&$(id).hidden;$(id).hidden=!open;$(key==='timezone'?'timezoneToggle':'accountToggle').setAttribute('aria-expanded',String(open))});if(which==='timezone'&&!$('timezoneDetail').hidden){renderTimezone();$('timezoneMode').focus()}}
 $('profileEdit').addEventListener('click',()=>{openSettingsDetail('account');$('settingsName').focus()});
 $('timezoneToggle').addEventListener('click',()=>openSettingsDetail('timezone'));
 $('accountToggle').addEventListener('click',()=>openSettingsDetail('account'));
-$('timezoneMode').addEventListener('change',()=>{appSettings.timezoneMode=$('timezoneMode').value;$('timezoneSearchWrap').hidden=appSettings.timezoneMode!=='manual';renderTimezone()});
+$('timezoneAuto').addEventListener('click',()=>{appSettings.timezoneMode='auto';appSettings.timezone=deviceTimezone();renderTimezone()});
+$('timezoneManual').addEventListener('click',()=>{appSettings.timezoneMode='manual';renderTimezone();$('timezoneSearch').focus()});
 $('timezoneSearch').addEventListener('input',()=>populateTimezoneOptions($('timezoneSearch').value));
-$('saveTimezone').addEventListener('click',()=>{appSettings.timezoneMode=$('timezoneMode').value;if(appSettings.timezoneMode==='manual'){const chosen=$('timezoneSelect').value;if(!chosen){showToast('Choose a time zone first.');return}appSettings.timezone=chosen}else appSettings.timezone=deviceTimezone();if(saveAppSettings()){renderTimezone();showToast('Time zone preference saved')}})
+$('saveTimezone').addEventListener('click',()=>{if(appSettings.timezoneMode==='manual'&&!allTimezones.includes(appSettings.timezone)){showToast('Choose a time zone from the search results.');return}if(appSettings.timezoneMode==='auto')appSettings.timezone=deviceTimezone();if(saveAppSettings()){renderTimezone();showToast('Time zone preference saved')}})
 $('saveProfile').addEventListener('click',()=>{appSettings.name=$('settingsName').value.trim();appSettings.location=$('settingsLocation').value.trim();if(saveAppSettings()){renderProfile();showToast('Profile saved')}})
 function applyAppearance(){document.querySelector('.app').classList.toggle('settings-dark',!!appSettings.dark);$('appearanceToggle').setAttribute('aria-checked',String(!!appSettings.dark))}
 $('appearanceToggle').addEventListener('click',()=>{appSettings.dark=!appSettings.dark;if(saveAppSettings())applyAppearance()});
