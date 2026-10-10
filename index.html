@@ -133,7 +133,7 @@ function eventMarkup(e){return '<article class="event '+(e.done?'done':'')+'"><i
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function listMarkup(list,empty){return list.length?list.map(eventMarkup).join(''):'<div class="empty">'+empty+'</div>'}
 function bindEventActions(root){root.querySelectorAll('[data-check]').forEach(el=>el.addEventListener('change',()=>{const e=events.find(x=>x.id===el.dataset.check);if(e){e.done=el.checked;persist();renderAll()}}));root.querySelectorAll('[data-edit]').forEach(el=>el.addEventListener('click',()=>openNormal(events.find(x=>x.id===el.dataset.edit))))}
-function renderHome(){const homeDay=selected;$('heroWeekday').textContent=fmtDate(homeDay,{weekday:'long'});$('heroDate').textContent=fmtDate(homeDay,{day:'numeric',month:'long',year:'numeric'});$('homeScreen').querySelector('.section-heading').textContent=sameDay(homeDay,today)?'Today':fmtDate(homeDay,{day:'numeric',month:'long'})+' · To do';const list=onDay(homeDay),todo=list.filter(e=>!e.done),done=list.filter(e=>e.done);$('todayEvents').innerHTML='<div class="eyebrow">To do · '+todo.length+'</div><div class="event-list">'+listMarkup(todo,'Nothing planned for this day.')+'</div><div class="eyebrow">Completed · '+done.length+'</div><div class="event-list">'+listMarkup(done,'Completed events will appear here.')+'</div>';bindEventActions($('todayEvents'))}
+function renderHome(){const homeDay=today;$('heroWeekday').textContent=fmtDate(homeDay,{weekday:'long'});$('heroDate').textContent=fmtDate(homeDay,{day:'numeric',month:'long',year:'numeric'});$('homeScreen').querySelector('.section-heading').textContent=sameDay(homeDay,today)?'Today':fmtDate(homeDay,{day:'numeric',month:'long'})+' · To do';const list=onDay(homeDay),todo=list.filter(e=>!e.done),done=list.filter(e=>e.done);$('todayEvents').innerHTML='<div class="eyebrow">To do · '+todo.length+'</div><div class="event-list">'+listMarkup(todo,'Nothing planned for this day.')+'</div><div class="eyebrow">Completed · '+done.length+'</div><div class="event-list">'+listMarkup(done,'Completed events will appear here.')+'</div>';bindEventActions($('todayEvents'))}
 function monthStart(d){return new Date(d.getFullYear(),d.getMonth(),1,12)}
 function monthKey(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)}
 function makeMonth(d){const first=monthStart(d),offset=(first.getDay()+6)%7,days=new Date(d.getFullYear(),d.getMonth()+1,0).getDate(),count=Math.ceil((offset+days)/7)*7,start=addDays(first,-offset);let out='<section class="timeline-month" data-month="'+monthKey(first)+'"><div class="timeline-title">'+esc(fmtDate(first,{month:'long',year:'numeric'}))+'</div><div class="date-grid">';for(let i=0;i<count;i++){const day=addDays(start,i),items=onDay(day);out+='<button class="date-cell '+(day.getMonth()!==first.getMonth()?'outside ':'')+(sameDay(day,today)?'today ':'')+(sameDay(day,selected)?'selected':'')+'" data-date="'+dateKey(day)+'" aria-label="'+esc(fmtDate(day))+(items.length?', '+items.length+' events':'')+'"><span>'+day.getDate()+'</span><span class="dots">'+items.slice(0,3).map(()=>'<i></i>').join('')+'</span></button>'}return out+'</div></section>'}
@@ -291,15 +291,21 @@ handle.addEventListener('pointermove',e=>{
 function settleHandleDrag(target){
  if(!handleDragging)return;
  const changed=target!==handleStartView;
- // Keep layout interpolation exclusive to a completed handle drag. Ordinary
- // view switches should not animate the scroller's flex size or height.
- if(changed)calendarScreen.classList.add('is-view-settling');
- clearHandleDrag();
- if(!changed)return;
+ if(!changed){clearHandleDrag();return}
+ // Preserve the pointer-driven preview until the target layout is rendered.
+ // Then release the preview under active CSS transitions, rather than clearing
+ // its layout variables first (which caused the snap).
+ clearTimeout(viewSettleTimer);
+ calendarScreen.classList.add('is-view-settling');
+ clearHandleDrag(true);
+ calendarScreen.classList.remove('is-view-dragging','drag-toward-open','drag-toward-closed');
  view=target;
  renderCalendar(true);
- clearTimeout(viewSettleTimer);
- viewSettleTimer=setTimeout(()=>calendarScreen.classList.remove('is-view-settling'),480);
+ requestAnimationFrame(()=>{
+  ['--drag-progress','--drag-panel-size','--drag-close-size','--drag-scroller-max','--drag-scroller-scale','--drag-scroller-height'].forEach(k=>calendarScreen.style.removeProperty(k));
+  selectedPanel.style.removeProperty('--panel-drag-y');
+ });
+ viewSettleTimer=setTimeout(()=>calendarScreen.classList.remove('is-view-settling'),520);
 }
 function finishHandleDrag(e){
  if(!handleDragging)return;
