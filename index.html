@@ -154,11 +154,11 @@ function renderCalendar(settleTransition=false){
    const anim=el.animate([
     {transformOrigin:'top left',transform:'translate('+dx+'px,'+dy+'px) scale('+sx+','+sy+')'},
     {transformOrigin:'top left',transform:'translate(0,0) scale(1,1)'}
-   ],{duration:440,easing:'cubic-bezier(.22,.75,.25,1)',fill:'both'});
+   ],{duration:520,easing:'cubic-bezier(.22,.75,.25,1)',fill:'both'});
    anim.onfinish=()=>anim.cancel();
   };
   if(canGlide){glide(sc,beforeScroller,afterScroller);glide($('selectedPanel'),beforePanel,afterPanel);}
-  viewSettleTimer=setTimeout(()=>screen.classList.remove('is-view-settling','is-release-flip'),canGlide?470:0);
+  viewSettleTimer=setTimeout(()=>screen.classList.remove('is-view-settling','is-release-flip'),canGlide?550:0);
   return;
  }
  const canAnimate=screen.classList.contains('active')&&typeof sc.animate==='function'&&!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
