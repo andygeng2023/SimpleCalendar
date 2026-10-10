@@ -1,12 +1,12 @@
 {
-  "name": "Daymark Calendar",
-  "short_name": "Daymark",
-  "description": "A calm, simple calendar for your days.",
+  "name": "Calex — Calendar",
+  "short_name": "Calex",
+  "description": "A calm, beautifully tactile calendar for your days.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f8faf7",
-  "theme_color": "#ffffff",
+  "background_color": "#CAD2C5",
+  "theme_color": "#CAD2C5",
   "icons": [
     {
       "src": "./icon.svg",
