@@ -94,6 +94,31 @@
 #calendarScreen.is-view-settling .calendar-scroller{transition:flex-basis .3s cubic-bezier(.2,.75,.25,1),height .3s cubic-bezier(.2,.75,.25,1),max-height .3s cubic-bezier(.2,.75,.25,1)}
 #calendarScreen.is-view-settling .selected-panel{transition:flex-basis .3s cubic-bezier(.2,.75,.25,1),transform .3s cubic-bezier(.2,.75,.25,1)}
 #calendarScreen:not(.panel-open) .calendar-scroller.all-mode{scroll-behavior:auto!important;}
+
+/* Settings screen */
+#settingsScreen{overflow-y:auto;gap:20px;padding-top:18px;padding-bottom:24px}
+.settings-title{font-size:28px;font-weight:800;letter-spacing:-.8px;margin:2px 0 0}
+.profile-card{display:flex;align-items:center;gap:15px;padding:18px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(135deg,#f5faf5,#fff);text-align:left;width:100%;color:var(--ink)}
+.profile-avatar{width:62px;height:62px;flex:0 0 62px;border-radius:50%;display:grid;place-items:center;background:#dcefe0;color:var(--green-dark);font-size:21px;font-weight:800;overflow:hidden}
+.profile-copy{min-width:0;flex:1}.profile-name{font-size:18px;font-weight:800;overflow-wrap:anywhere}.profile-location{font-size:13px;color:var(--muted);margin-top:5px}.profile-edit{color:var(--muted);font-size:12px}
+.settings-group{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff}
+.settings-group-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);padding:15px 16px 8px}
+.settings-row{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;border:0;border-top:1px solid #edf0eb;background:#fff;color:var(--ink);text-align:left;min-height:60px}
+.settings-row:first-of-type{border-top:0}.settings-icon{width:38px;height:38px;flex:0 0 38px;border-radius:12px;display:grid;place-items:center;background:#eef6ef;color:var(--green-dark)}
+.settings-icon svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.settings-row-copy{flex:1;min-width:0}.settings-row-title{font-size:14px;font-weight:750}.settings-row-sub{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4}.settings-chevron{color:var(--muted);font-size:20px}
+.settings-detail{padding:4px 16px 16px 66px;border-top:1px solid #edf0eb;background:#fbfdfb}
+.settings-detail[hidden]{display:none}.settings-detail label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin:10px 0 6px}
+.settings-detail input,.settings-detail select{width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink)}
+.settings-detail .settings-help{font-size:12px;color:var(--muted);line-height:1.5;margin:9px 0 0}
+.settings-inline{display:flex;align-items:center;gap:8px;margin-top:10px}.settings-inline button{border:1px solid var(--line);border-radius:10px;padding:10px 13px;background:#fff;color:var(--ink);font-weight:700}.settings-inline .save-settings{background:var(--green);border-color:var(--green);color:#fff}
+.settings-switch{width:44px;height:26px;border-radius:99px;border:0;background:#cbd4ca;padding:3px;display:flex;align-items:center;flex:0 0 auto}.settings-switch span{width:20px;height:20px;border-radius:50%;background:white;box-shadow:0 1px 3px #0002;transition:transform .18s}.settings-switch[aria-checked="true"]{background:var(--green)}.settings-switch[aria-checked="true"] span{transform:translateX(18px)}
+.settings-footnote{font-size:12px;line-height:1.6;color:var(--muted);padding:0 2px}
+.app.settings-dark{--ink:#edf3ed;--muted:#aab7aa;--line:#344337;--paper:#18221a;--bg:#101811;background:#18221a;color:#edf3ed}
+.app.settings-dark .bottom-nav,.app.settings-dark .settings-group,.app.settings-dark .settings-row,.app.settings-dark .profile-card,.app.settings-dark .settings-detail,.app.settings-dark .settings-detail input,.app.settings-dark .settings-detail select{background:#1d2a20;color:#edf3ed}
+.app.settings-dark .profile-card{background:linear-gradient(135deg,#223628,#1d2a20)}.app.settings-dark .settings-icon,.app.settings-dark .profile-avatar{background:#304b36;color:#c7ebce}.app.settings-dark .settings-row{border-color:#344337}.app.settings-dark .settings-detail{border-color:#344337}.app.settings-dark .settings-detail input,.app.settings-dark .settings-detail select{border-color:#425345}
+@media(max-width:430px){#settingsScreen{padding-left:20px;padding-right:20px}.profile-card{padding:15px}.settings-detail{padding-left:16px}}
+
 </style>
 </head>
 <body><div class="app">
@@ -101,7 +126,46 @@
 <main>
 <section id="homeScreen" class="screen active"><div class="day-hero"><div class="weekday" id="heroWeekday">Monday</div><div class="long-date" id="heroDate"></div></div><h2 class="section-heading">Today</h2><div id="todayEvents"></div></section>
 <section id="calendarScreen" class="screen"><div class="search-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><input id="searchInput" class="search" placeholder="Search dates or events…" autocomplete="off" aria-label="Search dates or events"></div><div id="searchResults" class="search-results"></div><div class="calendar-toolbar"><div class="month-title" id="monthTitle">October 2026</div><div class="month-controls"><button id="prevYear" aria-label="Previous year" title="Previous year"><svg viewBox="0 0 24 24"><path d="m11 5-7 7 7 7M20 5l-7 7 7 7"/></svg></button><button id="prevMonth" aria-label="Previous month" title="Previous month"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><button id="nextMonth" aria-label="Next month" title="Next month"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button><button id="nextYear" aria-label="Next year" title="Next year"><svg viewBox="0 0 24 24"><path d="m13 5 7 7-7 7M4 5l7 7-7 7"/></svg></button></div></div><div id="calendarScroller" class="calendar-scroller"><div class="weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div><div id="dateGrid" class="date-grid"></div></div><section id="selectedPanel" class="selected-panel"><div class="panel-handle"><span class="handle-grip" aria-hidden="true"></span></div><div class="panel-head"><h2 id="panelDate">Selected day</h2><div class="panel-actions"><button class="panel-text-btn" id="panelQuick" aria-label="Quick event">Quick event</button><button class="panel-text-btn primary-action" id="panelAdd" aria-label="Add event">Add event</button></div></div><div id="panelEvents"></div></section></section>
-<section id="settingsScreen" class="screen settings-empty" aria-label="Settings"></section>
+<section id="settingsScreen" class="screen" aria-label="Settings">
+<h1 class="settings-title">Settings</h1>
+<button class="profile-card" id="profileEdit" type="button" aria-label="Edit profile">
+<span class="profile-avatar" id="profileAvatar" aria-hidden="true">A</span>
+<span class="profile-copy"><span class="profile-name" id="profileName">Your name</span><span class="profile-location" id="profileLocation">Add your location</span></span>
+<span class="profile-edit">Edit</span>
+</button>
+<div class="settings-group">
+<div class="settings-group-title">Preferences</div>
+<button class="settings-row" id="timezoneToggle" type="button" aria-expanded="false" aria-controls="timezoneDetail">
+<span class="settings-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></span>
+<span class="settings-row-copy"><span class="settings-row-title">Time zone</span><span class="settings-row-sub" id="timezoneSummary">Automatic · device time zone</span></span><span class="settings-chevron" aria-hidden="true">›</span>
+</button>
+<div class="settings-detail" id="timezoneDetail" hidden>
+<label for="timezoneMode">Time zone mode</label><select id="timezoneMode"><option value="auto">Automatic (use this device)</option><option value="manual">Choose a time zone</option></select>
+<div id="timezoneSearchWrap" hidden><label for="timezoneSearch">Search time zones</label><input id="timezoneSearch" type="search" placeholder="Search city or region…" autocomplete="off"><label for="timezoneSelect">Available time zones</label><select id="timezoneSelect" size="5" aria-label="Available time zones"></select></div>
+<p class="settings-help" id="timezoneHelp">Automatic mode follows the time zone configured on this device.</p>
+<div class="settings-inline"><button type="button" class="save-settings" id="saveTimezone">Save time zone</button></div>
+</div>
+<button class="settings-row" id="accountToggle" type="button" aria-expanded="false" aria-controls="accountDetail">
+<span class="settings-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+<span class="settings-row-copy"><span class="settings-row-title">Account & profile</span><span class="settings-row-sub">Your display name and location</span></span><span class="settings-chevron" aria-hidden="true">›</span>
+</button>
+<div class="settings-detail" id="accountDetail" hidden>
+<label for="settingsName">Display name</label><input id="settingsName" maxlength="80" placeholder="Your name">
+<label for="settingsLocation">Location</label><input id="settingsLocation" maxlength="120" placeholder="City or region">
+<p class="settings-help">This profile is saved on this device. Daymark does not currently have sign-in or a synced account.</p>
+<div class="settings-inline"><button type="button" class="save-settings" id="saveProfile">Save profile</button></div>
+</div>
+<button class="settings-row" id="appearanceToggle" type="button" role="switch" aria-checked="false">
+<span class="settings-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 14A8.5 8.5 0 0 1 10 3.5 8.5 8.5 0 1 0 20.5 14Z"/></svg></span>
+<span class="settings-row-copy"><span class="settings-row-title">Dark appearance</span><span class="settings-row-sub">Switch between light and dark themes</span></span><span class="settings-switch" id="appearanceSwitch" aria-hidden="true"><span></span></span>
+</button>
+<button class="settings-row" id="exportCalendar" type="button">
+<span class="settings-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></svg></span>
+<span class="settings-row-copy"><span class="settings-row-title">Export events</span><span class="settings-row-sub">Download a calendar file (.ics)</span></span><span class="settings-chevron" aria-hidden="true">›</span>
+</button>
+</div>
+<p class="settings-footnote">Your calendar and these preferences are stored locally in this browser. Account sign-in and cloud synchronisation are not configured.</p>
+</section>
 </main>
 <nav class="bottom-nav" aria-label="Main navigation"><button class="nav-btn active" data-screen="home"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></button><button class="nav-btn" data-screen="calendar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Calendar</span></button><button class="nav-btn" data-screen="settings"><svg viewBox="0 0 24 24"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/><path d="m19.4 13.5 1.1.9-1.5 2.6-1.4-.5a7.9 7.9 0 0 1-1.6.9l-.3 1.5h-3l-.3-1.5a7.9 7.9 0 0 1-1.6-.9l-1.4.5-1.5-2.6 1.1-.9a7.4 7.4 0 0 1 0-1.9l-1.1-.9 1.5-2.6 1.4.5a7.9 7.9 0 0 1 1.6-.9l.3-1.5h3l.3 1.5a7.9 7.9 0 0 1 1.6.9l1.4-.5 1.5 2.6-1.1.9a7.4 7.4 0 0 1 0 1.9Z"/></svg><span>Settings</span></button></nav>
 </div>
@@ -225,7 +289,34 @@ function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('sh
 function openModal(mode){modalMode=mode;$('modalBackdrop').dataset.mode=mode;$('modalTitle').textContent=mode==='quick'?'Quick add':'New event';$('quickForm').hidden=mode!=='quick';$('eventForm').hidden=mode==='quick';$('modalBackdrop').classList.add('open');if(mode==='quick'){$('quickText').value='';$('quickPreview').textContent='';setTimeout(()=>$('quickText').focus(),100)}else if(!$('eventTitle').value)setNormalDefaults()}
 function closeModal(){$('modalBackdrop').classList.remove('open')}
 function setNormalDefaults(e){$('eventTitle').value=e?.title||'';$('eventDescription').value=e?.description||'';$('eventDate').value=e?.date||dateKey(selected);$('eventLocation').value=e?.location||'';$('eventStart').value=e?.start||'';$('eventEnd').value=e?.end||'';$('eventRepeat').value=e?.repeat||'none';$('eventPeople').value=e?.people||'';$('eventNotes').value=e?.notes||'';$('eventForm').dataset.editId=e?.id||''}
-function openNormal(e){switchScreen('calendar');openModal('normal');setNormalDefaults(e);$('modalTitle').textContent=e?'Edit event':'New event';if(e){const old=$('eventForm').querySelector('.delete-event');if(old)old.remove();const del=document.createElement('button');del.type='button';del.className='secondary delete-event';del.innerHTML='<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg>';del.setAttribute('aria-label','Delete event');del.title='Delete event';del.style.cssText='width:48px;height:44px;display:grid;place-items:center;margin:10px 0 0 auto;padding:0';del.onclick=()=>{if(confirm('Delete this event?')){events=events.filter(x=>x.id!==e.id);persist();closeModal();renderAll();showToast('Event deleted')}};$('eventForm').appendChild(del)}else{$('eventForm').querySelector('.delete-event')?.remove()}}
+function openNormal(e){switchScreen('calendar');openModal('normal');setNormalDefaults(e);$('modalTitle').textContent=e?'Edit event':'New event';if(e){const old=$('eventForm').querySelector('.delete-event');if(old)old.remove();const del=document.createElement('button');del.type='button';del.className='secondary delete-event';del.innerHTML='<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg>';del.setAttribute('aria-label','Delete event');del.title='Delete event';del.style.cssText='width:48px;height:44px;display:grid;place-items:center;margin:10px 0 0 auto;padding:0';del.onclick=()=>{if(confirm('Delete this event?')){events=events.filter(x=>x.id!==e.id);persist();closeModal();
+/* Local profile, time-zone preference, appearance, and calendar export */
+const settingsKey='daymark-settings-v1';
+const deviceTimezone=()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone||'UTC'}catch(_){return 'UTC'}};
+const defaultSettings={name:'',location:'',timezoneMode:'auto',timezone:deviceTimezone(),dark:false};
+let appSettings={...defaultSettings};
+try{const saved=JSON.parse(localStorage.getItem(settingsKey)||'{}');if(saved&&typeof saved==='object')appSettings={...defaultSettings,...saved}}catch(_){}
+function saveAppSettings(){try{localStorage.setItem(settingsKey,JSON.stringify(appSettings));return true}catch(_){showToast('Could not save settings in this browser.');return false}}
+function timezoneNames(){try{if(typeof Intl.supportedValuesOf==='function')return Intl.supportedValuesOf('timeZone')}catch(_){}return ['UTC','Europe/London','Europe/Paris','Europe/Berlin','Europe/Madrid','Europe/Rome','Europe/Amsterdam','Europe/Dublin','Europe/Helsinki','America/New_York','America/Chicago','America/Denver','America/Los_Angeles','America/Toronto','America/Vancouver','Asia/Dubai','Asia/Kolkata','Asia/Singapore','Asia/Tokyo','Asia/Seoul','Australia/Perth','Australia/Sydney','Pacific/Auckland']}
+let allTimezones=timezoneNames();
+function renderProfile(){const name=appSettings.name.trim()||'Your name',location=appSettings.location.trim()||'Add your location';$('profileName').textContent=name;$('profileLocation').textContent=location;$('profileAvatar').textContent=appSettings.name.trim()?appSettings.name.trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase():'A';$('settingsName').value=appSettings.name;$('settingsLocation').value=appSettings.location}
+function currentTimezone(){return appSettings.timezoneMode==='manual'&&allTimezones.includes(appSettings.timezone)?appSettings.timezone:deviceTimezone()}
+function renderTimezone(){const tz=currentTimezone();$('timezoneSummary').textContent=appSettings.timezoneMode==='auto'?'Automatic · '+deviceTimezone():tz;$('timezoneMode').value=appSettings.timezoneMode;$('timezoneSearchWrap').hidden=appSettings.timezoneMode!=='manual';$('timezoneHelp').textContent=appSettings.timezoneMode==='auto'?'Automatic mode follows the time zone configured on this device.':'Selected time zone: '+tz+'. Existing event dates and times are not converted.';populateTimezoneOptions($('timezoneSearch').value||tz)}
+function populateTimezoneOptions(query=''){const select=$('timezoneSelect'),q=query.toLowerCase();const filtered=allTimezones.filter(z=>z.toLowerCase().includes(q));select.innerHTML=filtered.map(z=>'<option value="'+esc(z)+'">'+esc(z.replace(/_/g,' '))+'</option>').join('');if(filtered.includes(appSettings.timezone))select.value=appSettings.timezone;else if(filtered.includes(deviceTimezone()))select.value=deviceTimezone();else if(filtered.length)select.selectedIndex=0}
+function openSettingsDetail(which){const ids={timezone:'timezoneDetail',account:'accountDetail'};Object.entries(ids).forEach(([key,id])=>{const open=key===which&&$(id).hidden;$(id).hidden=!open;$(key==='timezone'?'timezoneToggle':'accountToggle').setAttribute('aria-expanded',String(open))});if(which==='timezone'&&!$('timezoneDetail').hidden){renderTimezone();$('timezoneMode').focus()}}
+$('profileEdit').addEventListener('click',()=>{openSettingsDetail('account');$('settingsName').focus()});
+$('timezoneToggle').addEventListener('click',()=>openSettingsDetail('timezone'));
+$('accountToggle').addEventListener('click',()=>openSettingsDetail('account'));
+$('timezoneMode').addEventListener('change',()=>{appSettings.timezoneMode=$('timezoneMode').value;$('timezoneSearchWrap').hidden=appSettings.timezoneMode!=='manual';renderTimezone()});
+$('timezoneSearch').addEventListener('input',()=>populateTimezoneOptions($('timezoneSearch').value));
+$('saveTimezone').addEventListener('click',()=>{appSettings.timezoneMode=$('timezoneMode').value;if(appSettings.timezoneMode==='manual'){const chosen=$('timezoneSelect').value;if(!chosen){showToast('Choose a time zone first.');return}appSettings.timezone=chosen}else appSettings.timezone=deviceTimezone();if(saveAppSettings()){renderTimezone();showToast('Time zone preference saved')}})
+$('saveProfile').addEventListener('click',()=>{appSettings.name=$('settingsName').value.trim();appSettings.location=$('settingsLocation').value.trim();if(saveAppSettings()){renderProfile();showToast('Profile saved')}})
+function applyAppearance(){document.querySelector('.app').classList.toggle('settings-dark',!!appSettings.dark);$('appearanceToggle').setAttribute('aria-checked',String(!!appSettings.dark))}
+$('appearanceToggle').addEventListener('click',()=>{appSettings.dark=!appSettings.dark;if(saveAppSettings())applyAppearance()});
+$('exportCalendar').addEventListener('click',()=>{const escapeIcs=v=>String(v||'').replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Daymark//SimpleCalendar//EN','CALSCALE:GREGORIAN'];events.forEach(e=>{if(!validEventDate(e.date))return;const stamp=e.date.replace(/-/g,'');lines.push('BEGIN:VEVENT','UID:'+escapeIcs(e.id||crypto.randomUUID())+'@daymark','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'') ,'DTSTART'+(e.start?';VALUE=DATE-TIME:'+':'+stamp+'T'+e.start.replace(':','')+'00':' ;VALUE=DATE:'+stamp).replace(/^ ;/,';'));if(e.end&&e.start)lines.push('DTEND:'+stamp+'T'+e.end.replace(':','')+'00');lines.push('SUMMARY:'+escapeIcs(e.title));if(e.description)lines.push('DESCRIPTION:'+escapeIcs(e.description));if(e.location)lines.push('LOCATION:'+escapeIcs(e.location));lines.push('END:VEVENT')});lines.push('END:VCALENDAR');const blob=new Blob([lines.join('\r\n')+'\r\n'],{type:'text/calendar;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='daymark-calendar.ics';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast('Calendar export prepared')});
+renderProfile();renderTimezone();applyAppearance();
+
+renderAll();showToast('Event deleted')}};$('eventForm').appendChild(del)}else{$('eventForm').querySelector('.delete-event')?.remove()}}
 $('panelQuick').addEventListener('click',()=>openModal('quick'));$('panelAdd').addEventListener('click',()=>openNormal());$('closeModal').addEventListener('click',closeModal);$('modalBackdrop').addEventListener('click',e=>{if(e.target===$('modalBackdrop'))closeModal()});
 function parseNatural(raw){let s=raw.trim(),title=s,date=new Date(selected),start='',end='',repeat='none',explicitDate=false;const now=new Date();function setDate(d){date=new Date(d.getFullYear(),d.getMonth(),d.getDate(),12);explicitDate=true}
 let m;if((m=s.match(/\b(today|tomorrow|day after tomorrow)\b/i))){setDate(addDays(now,/day after tomorrow/i.test(m[0])?2:/tomorrow/i.test(m[0])?1:0));title=title.replace(m[0],' ')}
