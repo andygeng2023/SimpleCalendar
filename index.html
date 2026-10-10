@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#f5f8f5">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./icon.svg"><meta name="description" content="A calm, simple calendar for your days.">
-<title>Daymark — Calendar</title>
+<title>Calex — Calendar</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body><div class="app">
-<header class="topbar"><div class="brand">day<span>mark</span></div><div class="top-actions" aria-hidden="true"></div></header>
+<header class="topbar"><div class="brand">Cal<span>ex</span></div><div class="top-actions" aria-hidden="true"></div></header>
 <main>
 <section id="homeScreen" class="screen active"><div class="day-hero"><div class="weekday" id="heroWeekday">Monday</div><div class="long-date" id="heroDate"></div></div><h2 class="section-heading">Today</h2><div id="todayEvents"></div></section>
 <section id="calendarScreen" class="screen"><div class="search-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><input id="searchInput" class="search" placeholder="Search dates or events…" autocomplete="off" aria-label="Search dates or events"></div><div id="searchResults" class="search-results"></div><div class="calendar-toolbar"><div class="month-title" id="monthTitle">October 2026</div><div class="month-controls"><button id="prevYear" aria-label="Previous year" title="Previous year"><svg viewBox="0 0 24 24"><path d="m11 5-7 7 7 7M20 5l-7 7 7 7"/></svg></button><button id="prevMonth" aria-label="Previous month" title="Previous month"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><button id="nextMonth" aria-label="Next month" title="Next month"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button><button id="nextYear" aria-label="Next year" title="Next year"><svg viewBox="0 0 24 24"><path d="m13 5 7 7-7 7M4 5l7 7-7 7"/></svg></button></div></div><div id="calendarScroller" class="calendar-scroller"><div class="weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div><div id="dateGrid" class="date-grid"></div></div><section id="selectedPanel" class="selected-panel"><div class="panel-handle"><span class="handle-grip" aria-hidden="true"></span></div><div class="panel-head"><h2 id="panelDate">Selected day</h2><div class="panel-actions"><button class="panel-text-btn" id="panelQuick" aria-label="Quick event">Quick event</button><button class="panel-text-btn primary-action" id="panelAdd" aria-label="Add event">Add event</button></div></div><div id="panelEvents"></div></section></section>
