@@ -346,10 +346,10 @@ handle.addEventListener('pointermove',e=>{
 });
 function settleHandleDrag(target){
  if(!handleDragging)return;
- const changed=target!==handleStartView;
- if(!changed){clearHandleDrag();return}
- // Leave the live drag layout intact; renderCalendar captures it and glides
- // the calendar and panel into their final geometry without opacity effects.
+ // Keep the pointer-driven geometry for both outcomes: commit the new view if
+ // the drag crossed its threshold, or glide back to the current view otherwise.
+ // In either case, renderCalendar captures the release position and eases the
+ // calendar and panel into their final geometry without opacity effects.
  clearTimeout(viewSettleTimer);
  clearHandleDrag(true);
  view=target;
