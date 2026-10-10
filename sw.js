@@ -1,8 +1,9 @@
-const CACHE_NAME = 'daymark-shell-v1';
+const CACHE_NAME = 'calex-shell-v2';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
+  './calex-theme.css',
   './app.js',
   './manifest.webmanifest',
   './icon.svg'
