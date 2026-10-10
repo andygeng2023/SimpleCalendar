@@ -269,6 +269,14 @@ $('saveProfile').addEventListener('click',()=>{appSettings.name=$('settingsName'
 function applyAppearance(){document.querySelector('.app').classList.toggle('settings-dark',!!appSettings.dark);$('appearanceToggle').setAttribute('aria-checked',String(!!appSettings.dark))}
 $('appearanceToggle').addEventListener('click',()=>{appSettings.dark=!appSettings.dark;if(saveAppSettings())applyAppearance()});
 $('exportCalendar').addEventListener('click',()=>{const escapeIcs=v=>String(v||'').replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Daymark//SimpleCalendar//EN','CALSCALE:GREGORIAN'];events.forEach(e=>{if(!validEventDate(e.date))return;const stamp=e.date.replace(/-/g,'');lines.push('BEGIN:VEVENT','UID:'+escapeIcs(e.id||crypto.randomUUID())+'@daymark','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'') ,(e.start?'DTSTART:'+stamp+'T'+e.start.replace(':','')+'00':'DTSTART;VALUE=DATE:'+stamp));if(e.end&&e.start)lines.push('DTEND:'+stamp+'T'+e.end.replace(':','')+'00');lines.push('SUMMARY:'+escapeIcs(e.title));if(e.description)lines.push('DESCRIPTION:'+escapeIcs(e.description));if(e.location)lines.push('LOCATION:'+escapeIcs(e.location));lines.push('END:VEVENT')});lines.push('END:VCALENDAR');const blob=new Blob([lines.join('\r\n')+'\r\n'],{type:'text/calendar;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='daymark-calendar.ics';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast('Calendar export prepared')});
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {
+      // The app remains usable when service-worker registration is unavailable.
+    });
+  }, { once: true });
+}
+
 renderProfile();renderTimezone();applyAppearance();
 renderAll();
 })();
